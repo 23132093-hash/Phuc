@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nối từ TOEIC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EFEC; --surface:#FFFFFF; --surface-2:#F4F7F5;
+  --ink:#122420; --ink-soft:#4B635C; --line:#CBD8D3;
+  --accent:#0E6F63; --accent-soft:#D6EBE6;
+  --gold:#B8860B; --gold-soft:#F6EBD0;
+  --wrong:#B03A2E; --wrong-soft:#F7DFDC;
+  --radius:14px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1A17; --surface:#16251F; --surface-2:#1D2F28;
+    --ink:#E7EFEB; --ink-soft:#9BB3AB; --line:#2C443B;
+    --accent:#3DBFA8; --accent-soft:#16352F;
+    --gold:#E0B44C; --gold-soft:#332A15;
+    --wrong:#E8776A; --wrong-soft:#3A1F1C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1A17; --surface:#16251F; --surface-2:#1D2F28;
+  --ink:#E7EFEB; --ink-soft:#9BB3AB; --line:#2C443B;
+  --accent:#3DBFA8; --accent-soft:#16352F;
+  --gold:#E0B44C; --gold-soft:#332A15;
+  --wrong:#E8776A; --wrong-soft:#3A1F1C;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;line-height:1.5;
+}
+.wrap{max-width:720px;margin:0 auto;padding:18px 16px 40px}
+h1,h2,h3{font-family:"Fraunces","Be Vietnam Pro",Georgia,serif;font-weight:700;margin:0;line-height:1.15}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px}
+.hidden{display:none !important}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.topbar .spacer{flex:1}
+.ghost{
+  border:1px solid var(--line);border-radius:999px;padding:7px 14px;
+  font-size:14px;font-weight:500;background:var(--surface);color:var(--ink-soft);
+}
+.ghost:hover{color:var(--ink);border-color:var(--accent)}
+
+/* ---------- home ---------- */
+.hero{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:26px 22px;margin-bottom:16px;
+}
+.hero h1{font-size:clamp(30px,8vw,44px);letter-spacing:-.02em}
+.hero p{color:var(--ink-soft);margin:10px 0 0;max-width:46ch}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.stat{background:var(--surface-2);border-radius:10px;padding:10px 14px;min-width:96px}
+.stat b{display:block;font-family:"Fraunces",serif;font-size:22px}
+.stat span{font-size:12.5px;color:var(--ink-soft)}
+.primary{
+  display:block;width:100%;background:var(--accent);color:#fff;border-radius:12px;
+  padding:15px;font-size:17px;font-weight:600;margin-top:18px;
+}
+.primary:hover{filter:brightness(1.08)}
+:root[data-theme="dark"] .primary,
+:root:not([data-theme="light"]) .primary{color:#08201B}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .primary{color:#fff}}
+.secondary{
+  display:block;width:100%;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:13px;font-weight:600;margin-top:10px;text-align:center;
+}
+.secondary:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ---------- play ---------- */
+.hud{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.hud .lv{font-family:"Fraunces",serif;font-size:20px}
+.hud .meta{font-size:13.5px;color:var(--ink-soft)}
+.bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-bottom:18px;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s ease}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:10px}
+.card{
+  background:var(--surface);border:1.5px solid var(--line);border-radius:12px;
+  padding:13px 12px;text-align:left;min-height:64px;display:flex;align-items:center;
+  font-size:15px;font-weight:500;width:100%;transition:transform .12s,border-color .12s,background .12s;
+  word-break:break-word;hyphens:auto;
+}
+.card.en{font-weight:600}
+.card:hover:not(.done){border-color:var(--accent)}
+.card.sel{border-color:var(--gold);background:var(--gold-soft)}
+.card.done{background:var(--accent-soft);border-color:var(--accent);color:var(--ink-soft);opacity:.75;cursor:default}
+.card.bad{border-color:var(--wrong);background:var(--wrong-soft);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.card{transition:none}.card.bad{animation:none}}
+.hint{margin-top:16px;font-size:13.5px;color:var(--ink-soft);text-align:center}
+
+/* ---------- result / review list ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.panel h2{font-size:24px}
+.scoreline{color:var(--ink-soft);margin:8px 0 18px;font-size:14.5px}
+.wordlist{display:flex;flex-direction:column;gap:2px}
+.word{padding:12px 0;border-top:1px solid var(--line)}
+.word:first-child{border-top:none}
+.word .en{font-weight:700;font-size:16px}
+.word .ipa{color:var(--ink-soft);font-size:13.5px;margin-left:7px}
+.word .tag{display:inline-block;background:var(--surface-2);border-radius:6px;padding:1px 7px;font-size:12px;color:var(--ink-soft);margin-left:7px}
+.word .vi{font-size:14.5px;color:var(--ink-soft);margin-top:2px}
+.say{
+  border:1px solid var(--line);border-radius:8px;padding:2px 9px;margin-left:8px;
+  font-size:13px;color:var(--ink-soft);background:var(--surface-2);vertical-align:middle;
+}
+.say:hover{border-color:var(--accent);color:var(--accent)}
+.say.gt{text-decoration:none;display:inline-block;line-height:1.5}
+.card.en.done{cursor:pointer}
+.card.en.done::after{content:"🔊";margin-left:auto;font-size:14px;opacity:.7}
+
+/* ---------- library ---------- */
+.lib-head{margin-bottom:14px}
+.lib-head h2{font-size:26px}
+.lib-head p{color:var(--ink-soft);font-size:14.5px;margin:6px 0 0}
+.lvcard{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:14px;margin-bottom:10px;
+}
+.lvcard .row{display:flex;align-items:baseline;gap:10px}
+.lvcard .n{font-family:"Fraunces",serif;font-size:19px}
+.lvcard .sc{font-size:13px;color:var(--ink-soft);margin-left:auto}
+.lvcard .preview{font-size:14px;color:var(--ink-soft);margin:6px 0 12px}
+.replay{
+  border:1px solid var(--accent);color:var(--accent);border-radius:10px;
+  padding:9px 16px;font-size:14.5px;font-weight:600;
+}
+.replay:hover{background:var(--accent-soft)}
+.empty{text-align:center;padding:40px 16px;color:var(--ink-soft)}
+.empty b{display:block;color:var(--ink);font-family:"Fraunces",serif;font-size:20px;margin-bottom:8px}
+
+/* ---------- hôm nay + cài đặt ---------- */
+.today{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin-bottom:16px}
+.today h2{font-size:22px}
+.today .line{display:flex;gap:10px;align-items:baseline;margin-top:12px;font-size:15px}
+.today .line b{font-family:"Fraunces",serif;font-size:20px;min-width:30px}
+.today .line span{color:var(--ink-soft)}
+.today .note{font-size:13.5px;color:var(--ink-soft);margin:14px 0 0}
+.due-badge{display:inline-block;background:var(--gold-soft);color:var(--gold);border-radius:6px;padding:1px 8px;font-size:12.5px;font-weight:600}
+.due-badge.now{background:var(--accent-soft);color:var(--accent)}
+.field{margin-bottom:20px}
+.field h3{font-size:16px;font-family:"Be Vietnam Pro",sans-serif;font-weight:600}
+.field p{margin:4px 0 10px;font-size:13.5px;color:var(--ink-soft)}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--line);background:var(--surface-2);border-radius:10px;padding:9px 14px;font-size:14.5px;font-weight:500}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+input[type=time]{font:inherit;color:inherit;background:var(--surface-2);border:1.5px solid var(--line);border-radius:10px;padding:9px 12px}
+.plan{font-size:14px;color:var(--ink-soft);line-height:1.8;margin:0;padding-left:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <button class="ghost" id="btnHome">Trang chính</button>
+    <div class="spacer"></div>
+    <button class="ghost" id="btnSet">Lịch học</button>
+    <button class="ghost" id="btnLib">Màn đã chơi</button>
+  </div>
+
+  <!-- HOME -->
+  <section id="home">
+    <div class="today">
+      <h2 id="tTitle">Hôm nay</h2>
+      <div class="line"><b id="tDue">0</b><span>màn tới hạn ôn lại</span></div>
+      <div class="line"><b id="tNew">0</b><span>màn mới theo lịch</span></div>
+      <p class="note" id="tNote"></p>
+      <button class="primary" id="btnToday">Học hôm nay</button>
+    </div>
+
+    <div class="hero">
+      <h1>Nối từ TOEIC</h1>
+      <p>Nối từ tiếng Anh với nghĩa tiếng Việt. Mỗi màn 5 từ, không màn nào lặp lại từ của màn khác.</p>
+      <div class="stats">
+        <div class="stat"><b id="sDone">0</b><span>màn đã xong</span></div>
+        <div class="stat"><b id="sWords">0</b><span>từ đã học</span></div>
+        <div class="stat"><b id="sTotal">0</b><span>tổng số màn</span></div>
+      </div>
+      <button class="secondary" id="btnPlay">Chơi thêm màn mới</button>
+      <button class="secondary" id="btnLib2">Mở thư mục màn đã chơi</button>
+    </div>
+    <button class="ghost" id="btnReset" style="width:100%">Xóa toàn bộ tiến độ</button>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" class="hidden">
+    <div class="hud">
+      <div class="lv" id="pLv">Màn 1</div>
+      <div class="meta" id="pMeta">0/5 cặp</div>
+    </div>
+    <div class="bar"><i id="pBar"></i></div>
+    <div class="board">
+      <div class="col" id="colEn"></div>
+      <div class="col" id="colVi"></div>
+    </div>
+    <p class="hint">Chạm một từ tiếng Anh, rồi chạm nghĩa tương ứng.</p>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result" class="hidden">
+    <div class="panel">
+      <h2 id="rTitle">Xong màn 1</h2>
+      <p class="scoreline" id="rScore"></p>
+      <div class="wordlist" id="rWords"></div>
+      <button class="primary" id="btnNext">Màn tiếp theo</button>
+      <button class="secondary" id="btnAgain">Chơi lại màn này</button>
+      <button class="secondary" id="btnToLib">Về thư mục màn đã chơi</button>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="set" class="hidden">
+    <div class="panel">
+      <h2>Lịch học mỗi ngày</h2>
+      <p class="scoreline">Mỗi màn học xong sẽ tự hẹn ngày ôn lại. Nối đúng hết thì lần ôn sau giãn ra xa hơn, còn sai nhiều thì kéo về gần lại.</p>
+
+      <div class="field">
+        <h3>Số màn mới mỗi ngày</h3>
+        <p>Tương đương <span id="setWords">10</span> từ mới một ngày.</p>
+        <div class="opts" id="optNew"></div>
+      </div>
+
+      <div class="field">
+        <h3>Nhịp ôn lại</h3>
+        <p id="setSpacing"></p>
+        <div class="opts" id="optPace"></div>
+      </div>
+
+      <div class="field">
+        <h3>Phát âm</h3>
+        <p>Dùng giọng đọc có sẵn của máy. Bấm vào từ tiếng Anh đã nối đúng là nghe lại được.</p>
+        <div class="opts" id="optSpeak"></div>
+      </div>
+
+      <div class="field">
+        <h3>Giờ học</h3>
+        <p>Đặt giờ để trang nhắc bạn vào học. Lời nhắc chỉ chạy khi trang đang mở trên máy.</p>
+        <input type="time" id="optTime" value="20:00">
+      </div>
+
+      <div class="field" style="margin-bottom:6px">
+        <h3>Lịch dự kiến của một màn</h3>
+        <ul class="plan" id="planList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section id="lib" class="hidden">
+    <div class="lib-head">
+      <h2>Màn đã chơi</h2>
+      <p>Bấm “Ôn lại màn này” để chơi lại đúng 5 từ của màn đó.</p>
+    </div>
+    <div id="libList"></div>
+  </section>
+
+</div>
+
+<script>
+const VOCAB = [["Grant","/ɡrænt/","Danh từ","Khoản trợ cấp"],["Install","/ɪnˈstɔːl/","Động từ","Lắp đặt"],["Recent","/ˈriːsnt/","Tính từ","Gần đây"],["Objective","/əbˈdʒektɪv/","Danh từ","Mục tiêu"],["Sanctuary","/ˈsæŋktʃuəri/","Danh từ","Nơi trú ẩn, khu bảo tồn"],["Extra","/ˈekstrə/","Tính từ","Thêm, phụ"],["Dependent","/dɪˈpendənt/","Tính từ","Phụ thuộc"],["Reject","/rɪˈdʒekt/","Động từ","Từ chối, bác bỏ"],["Benefit","/ˈbenɪfɪt/","Động từ","Có lợi"],["Acquire","/əˈkwaɪər/","Động từ","Đạt được, thâu tóm"],["Various","/ˈveriəs/","Tính từ","Đa dạng"],["Argument","/ˈɑːrɡjumənt/","Danh từ","Lý lẽ, sự tranh luận"],["Privilege","/ˈprɪvəlɪdʒ/","Danh từ","Đặc quyền, vinh dự"],["Confidentiality","/ˌkɑːnfɪˌdenʃiˈæləti/","Danh từ","Sự bảo mật"],["Vast","/væst/","Tính từ","Rộng lớn, mênh mông"],["Extend","/ɪkˈstend/","Động từ","Kéo dài, gia hạn, mở rộng"],["Appropriate","/əˈproʊpriət/","Tính từ","Thích hợp"],["Coworker","/ˈkoʊwɜːrkər/","Danh từ","Đồng nghiệp"],["Lightweight","/ˈlaɪtweɪt/","Tính từ","Nhẹ"],["Master","/ˈmæstər/","Động từ","Tinh thông, nắm vững"],["Accountant","/əˈkaʊntənt/","Danh từ","Kế toán viên"],["Associated","/əˈsoʊsieɪtɪd/","Tính từ","Có liên quan, liên kết"],["Arrangement","/əˈreɪndʒmənt/","Danh từ","Sự sắp xếp"],["Eclectic","/ɪˈklektɪk/","Tính từ","Đa dạng, chiết trung (pha trộn nhiều phong cách)"],["Oversee","/ˌoʊvərˈsiː/","Động từ","Giám sát"],["Issue","/ˈɪʃuː/","Danh từ","Vấn đề"],["Cooperation","/koʊˌɑːpəˈreɪʃn/","Danh từ","Sự hợp tác"],["Improvement","/ɪmˈpruːvmənt/","Danh từ","Sự cải thiện, nâng cấp"],["Include","/ɪnˈkluːd/","Động từ","Bao gồm"],["Factor","/ˈfæktər/","Danh từ","Nhân tố, yếu tố"],["Challenge","/ˈtʃælɪndʒ/","Danh từ","Thử thách"],["Delighted","/dɪˈlaɪtɪd/","Tính từ","Vui mừng, hài lòng"],["Cabin","/ˈkæbɪn/","Danh từ","Khoang (máy bay, tàu), nhà gỗ nhỏ"],["Cookware","/ˈkʊkwer/","Danh từ","Dụng cụ nấu ăn"],["Recently","/ˈriːsntli/","Trạng từ","Gần đây"],["Regulation","/ˌreɡjuˈleɪʃn/","Danh từ","Quy định"],["Tuition","/tuˈɪʃn/","Danh từ","Học phí"],["Landscape","/ˈlændskeɪp/","Danh từ","Phong cảnh, cảnh quan"],["Convince","/kənˈvɪns/","Động từ","Thuyết phục"],["Clinical","/ˈklɪnɪkl/","Tính từ","Thuộc lâm sàng"],["Crash","/kræʃ/","Động từ","Hỏng (máy tính), đâm sầm vào"],["Flock to","/flɑːk tu/","Cụm động từ","Đổ xô đến, tụ tập"],["Administer","/ədˈmɪnɪstər/","Động từ","Quản lý, thực thi"],["Sourcing","/ˈsɔːrsɪŋ/","Danh từ","Tìm nguồn cung ứng"],["Purified","/ˈpjʊrɪfaɪd/","Tính từ","Được thanh lọc, tinh chế"],["Intent","/ɪnˈtent/","Danh từ","Ý định, mục đích"],["Ceiling","/ˈsiːlɪŋ/","Danh từ","Trần nhà"],["Preserve","/prɪˈzɜːrv/","Động từ","Bảo tồn, giữ gìn"],["Invitation","/ˌɪnvɪˈteɪʃn/","Danh từ","Lời mời"],["Time off","/taɪm ɔːf/","Danh từ","Thời gian nghỉ"],["Certainly","/ˈsɜːrtnli/","Trạng từ","Chắc chắn"],["Moderation","/ˌmɑːdəˈreɪʃn/","Danh từ","Sự tiết chế, điều độ"],["Symbolise","/ˈsɪmbəlaɪz/","Động từ","Tượng trưng cho"],["Downtown","/ˌdaʊnˈtaʊn/","Trạng từ","Thuộc khu trung tâm, ở trung tâm thành phố"],["Publication","/ˌpʌblɪˈkeɪʃn/","Danh từ","Ấn phẩm"],["Tolerant","/ˈtɑːlərənt/","Tính từ","Chịu đựng tốt, có khả năng kháng"],["Abundant","/əˈbʌndənt/","Tính từ","Dồi dào, phong phú"],["Reflect","/rɪˈflekt/","Động từ","Phản ánh, phản chiếu"],["Creamery","/ˈkriːməri/","Danh từ","Cửa hàng bán các sản phẩm từ sữa"],["Disposable","/dɪˈspoʊzəbl/","Tính từ","Dùng một lần"],["Refine","/rɪˈfaɪn/","Động từ","Tinh chỉnh, cải tiến"],["Cuisine","/kwɪˈziːn/","Danh từ","Ẩm thực, cách nấu nướng"],["Uneven","/ʌnˈiːvn/","Tính từ","Không bằng phẳng, không đều"],["Architectural","/ˌɑːrkɪˈtektʃərəl/","Tính từ","Thuộc về kiến trúc"],["Insider","/ɪnˈsaɪdər/","Danh từ","Người nội bộ"],["Desperate","/ˈdespərət/","Tính từ","Tuyệt vọng, liều lĩnh"],["Equipment","/ɪˈkwɪpmənt/","Danh từ","Thiết bị, dụng cụ"],["Exercise","/ˈeksərsaɪz/","Danh từ","Bài tập, sự rèn luyện"],["Announcement","/əˈnaʊnsmənt/","Danh từ","Thông báo"],["Productive","/prəˈdʌktɪv/","Tính từ","Năng suất, hiệu quả"],["Outcome","/ˈaʊtkʌm/","Danh từ","Kết quả"],["Constructive","/kənˈstrʌktɪv/","Tính từ","Mang tính xây dựng"],["Textile","/ˈtekstaɪl/","Danh từ","Dệt may"],["Affect","/əˈfekt/","Động từ","Ảnh hưởng, tác động"],["Fair","/fer/","Danh từ","Hội chợ"],["Enigmatic","/ˌenɪɡˈmætɪk/","Tính từ","Bí ẩn, khó hiểu"],["Exclusively","/ɪkˈskluːsɪvli/","Trạng từ","Dành riêng, độc quyền"],["Translate","/trænsˈleɪt/","Động từ","Dịch thuật"],["Prompt","/prɑːmpt/","Tính từ","Nhanh chóng, tức thời"],["Layover","/ˈleɪoʊvər/","Danh từ","Điểm dừng chân, thời gian nghỉ (chờ chuyến bay)"],["Concrete","/ˈkɑːŋkriːt/","Danh từ","Bê tông"],["Budget","/ˈbʌdʒɪt/","Danh từ","Ngân sách"],["Authorize","/ˈɔːθəraɪz/","Động từ","Ủy quyền, cho phép"],["Itinerary","/aɪˈtɪnəreri/","Danh từ","Lịch trình"],["Mark","/mɑːrk/","Động từ","Đánh dấu, kỷ niệm"],["Merger","/ˈmɜːrdʒər/","Danh từ","Sự sáp nhập"],["Face","/feɪs/","Động từ","Đối mặt, hướng về"],["Liquid","/ˈlɪkwɪd/","Danh từ","Chất lỏng"],["Assembly","/əˈsembli/","Danh từ","Sự lắp ráp"],["Admission","/ədˈmɪʃn/","Danh từ","Sự vào cửa, phí vào cửa"],["Struggle","/ˈstrʌɡl/","Động từ","Chật vật, cố gắng"],["Layout","/ˈleɪaʊt/","Danh từ","Bố cục, sơ đồ bố trí"],["Participant","/pɑːrˈtɪsɪpənt/","Danh từ","Người tham gia"],["Amazement","/əˈmeɪzmənt/","Danh từ","Sự ngạc nhiên"],["Applicant","/ˈæplɪkənt/","Danh từ","Ứng viên"],["Opportunity","/ˌɑːpərˈtuːnəti/","Danh từ","Cơ hội"],["Maintain","/meɪnˈteɪn/","Động từ","Bảo trì, duy trì"],["Conventional","/kənˈvenʃənl/","Tính từ","Thông thường, truyền thống"],["Expert","/ˈekspɜːrt/","Danh từ","Chuyên gia"],["Territory","/ˈterətɔːri/","Danh từ","Lãnh thổ, khu vực"],["Forward","/ˈfɔːrwərd/","Động từ","Chuyển tiếp"],["Fee","/fiː/","Danh từ","Lệ phí"],["Implement","/ˈɪmplɪment/","Động từ","Thi hành, thực hiện"],["Experiment","/ɪkˈsperɪmənt/","Danh từ","Cuộc thí nghiệm"],["Breathtaking","/ˈbreθteɪkɪŋ/","Tính từ","Ngoạn mục, hấp dẫn"],["Routinely","/ruːˈtiːnli/","Trạng từ","Thường lệ"],["Personalized","/ˈpɜːrsənəlaɪzd/","Tính từ","Cá nhân hóa"],["Average","/ˈævərɪdʒ/","Danh từ","Trung bình"],["Offset","/ˈɔːfset/","Động từ","Bù đắp, đền bù"],["Transplant","/trænsˈplænt/","Động từ","Cấy ghép, trồng lại"],["Pharmacy","/ˈfɑːrməsi/","Danh từ","Hiệu thuốc"],["Loan","/loʊn/","Danh từ","Khoản vay"],["Introduction","/ˌɪntrəˈdʌkʃn/","Danh từ","Sự giới thiệu, lời mở đầu"],["Name","/neɪm/","Động từ","Bổ nhiệm, chỉ định"],["Refrain","/rɪˈfreɪn/","Động từ","Kiềm chế, tự nguyện không làm"],["Exploration","/ˌekspləˈreɪʃn/","Danh từ","Sự thám hiểm"],["Reliability","/rɪˌlaɪəˈbɪləti/","Danh từ","Sự đáng tin cậy"],["Locate","/ˈloʊkeɪt/","Động từ","Xác định vị trí, tìm thấy"],["Snowpack","/ˈsnoʊpæk/","Danh từ","Lớp tuyết dày"],["Patron","/ˈpeɪtrən/","Danh từ","Khách hàng quen"],["Vote","/voʊt/","Động từ","Bỏ phiếu, bình chọn"],["Portrait","/ˈpɔːrtrət/","Danh từ","Chân dung"],["Tenure","/ˈtenjər/","Danh từ","Nhiệm kỳ"],["Drop","/drɑːp/","Động từ","Rơi, giảm sụt"],["Eliminate","/ɪˈlɪmɪneɪt/","Động từ","Loại bỏ"],["Latest","/ˈleɪtɪst/","Tính từ","Mới nhất"],["Encyclopaedia","/ɪnˌsaɪkləˈpiːdiə/","Danh từ","Bách khoa toàn thư"],["Convenient","/kənˈviːniənt/","Tính từ","Tiện lợi, thuận tiện"],["Timeline","/ˈtaɪmlaɪn/","Danh từ","Mốc thời gian, lịch trình"],["Curate","/ˈkjʊreɪt/","Động từ","Tuyển chọn, phụ trách"],["Majority","/məˈdʒɔːrəti/","Danh từ","Đa số, phần lớn"],["Additional","/əˈdɪʃənl/","Tính từ","Thêm vào, bổ sung"],["Passenger","/ˈpæsɪndʒər/","Danh từ","Hành khách"],["Navigate","/ˈnævɪɡeɪt/","Động từ","Điều hướng, tìm đường"],["Proposal","/prəˈpoʊzl/","Danh từ","Bản đề xuất"],["Physiotherapy","/ˌfɪzioʊˈθerəpi/","Danh từ","Vật lý trị liệu"],["Available","/əˈveɪləbl/","Tính từ","Có sẵn, rảnh rỗi"],["Expedite","/ˈekspədaɪt/","Động từ","Xúc tiến, đẩy nhanh"],["Spotless","/ˈspɑːtləs/","Tính từ","Không tì vết, sạch sẽ"],["Description","/dɪˈskrɪpʃn/","Danh từ","Sự mô tả"],["Obtain","/əbˈteɪn/","Động từ","Đạt được, lấy được"],["Outdoors","/ˌaʊtˈdɔːrz/","Trạng từ","Ở ngoài trời"],["Exposure","/ɪkˈspoʊʒər/","Danh từ","Sự phơi bày, sự tiếp xúc"],["Emphasize","/ˈemfəsaɪz/","Động từ","Nhấn mạnh"],["Quality","/ˈkwɑːləti/","Tính từ","Chất lượng cao"],["Wing","/wɪŋ/","Danh từ","Chái nhà, khu vực phụ (của tòa nhà)"],["Regard","/rɪˈɡɑːrd/","Động từ","Đánh giá, coi như, xem như"],["Focus","/ˈfoʊkəs/","Danh từ","Trọng tâm, tiêu điểm"],["Strength","/streŋθ/","Danh từ","Điểm mạnh"],["Profitable","/ˈprɑːfɪtəbl/","Tính từ","Có lợi nhuận, sinh lời"],["Assistance","/əˈsɪstəns/","Danh từ","Sự hỗ trợ"],["Establish","/ɪˈstæblɪʃ/","Động từ","Thành lập, thiết lập"],["Simplify","/ˈsɪmplɪfaɪ/","Động từ","Đơn giản hóa"],["Geographic","/ˌdʒiːəˈɡræfɪk/","Tính từ","Thuộc về địa lý"],["Doubt","/daʊt/","Động từ","Nghi ngờ"],["Apply","/əˈplaɪ/","Động từ","Áp dụng, nộp đơn"],["Destination","/ˌdestɪˈneɪʃn/","Danh từ","Điểm đến"],["Withdraw","/wɪðˈdrɔː/","Động từ","Rút tiền, rút lui"],["Requirement","/rɪˈkwaɪərmənt/","Danh từ","Yêu cầu"],["Renewal","/rɪˈnuːəl/","Danh từ","Sự gia hạn, đổi mới"],["Borrow","/ˈbɑːroʊ/","Động từ","Vay, mượn"],["Specified","/ˈspesɪfaɪd/","Tính từ","Được quy định, chỉ rõ"],["Express","/ɪkˈspres/","Tính từ","Tốc hành, nhanh"],["Flourishing","/ˈflɜːrɪʃɪŋ/","Tính từ","Hưng thịnh, phát triển mạnh"],["Commensurate","/kəˈmenʃərət/","Tính từ","Tương xứng"],["Fulfill","/fʊlˈfɪl/","Động từ","Hoàn thành, đáp ứng"],["Antique","/ænˈtiːk/","Danh từ","Đồ cổ, vật xưa"],["Facilitate","/fəˈsɪlɪteɪt/","Động từ","Tạo điều kiện, làm cho dễ dàng"],["Raffle","/ˈræfl/","Danh từ","Xổ số (gây quỹ)"],["Civilization","/ˌsɪvələˈzeɪʃn/","Danh từ","Nền văn minh"],["Transport","/ˈtrænspɔːrt/","Động từ","Vận chuyển"],["Engaging","/ɪnˈɡeɪdʒɪŋ/","Tính từ","Lôi cuốn, hấp dẫn"],["Inclement weather","/ɪnˈklemənt ˈweðər/","Danh từ","Thời tiết khắc nghiệt"],["Ship","/ʃɪp/","Động từ","Gửi hàng, vận chuyển"],["Authentic","/ɔːˈθentɪk/","Tính từ","Đích thực, chính cống"],["Headquarter","/ˈhedkwɔːrtər/","Động từ","Đặt trụ sở chính"],["A variety of","/ə vəˈraɪəti əv/","Cụm từ","Đa dạng"],["Adjustable","/əˈdʒʌstəbl/","Tính từ","Có thể điều chỉnh"],["Inspector","/ɪnˈspektər/","Danh từ","Thanh tra viên"],["Hygienist","/haɪˈdʒiːnɪst/","Danh từ","Chuyên viên vệ sinh (thường trong nha khoa)"],["Iconic","/aɪˈkɑːnɪk/","Tính từ","Mang tính biểu tượng"],["Botanical","/bəˈtænɪkl/","Tính từ","Thuộc thực vật học"],["Receptacle","/rɪˈseptəkl/","Danh từ","Chỗ chứa, thùng đựng"],["General","/ˈdʒenrəl/","Tính từ","Chung, tổng quát"],["Endeavour","/ɪnˈdevər/","Danh từ","Sự nỗ lực, cố gắng"],["Location","/loʊˈkeɪʃn/","Danh từ","Địa điểm, vị trí"],["Success","/səkˈses/","Danh từ","Sự thành công"],["Glimpse","/ɡlɪmps/","Danh từ","Cái nhìn thoáng qua"],["Fasten","/ˈfæsn/","Động từ","Thắt, buộc chặt"],["Workplace","/ˈwɜːrkpleɪs/","Danh từ","Nơi làm việc"],["Timeless","/ˈtaɪmləs/","Tính từ","Vô tận, vượt thời gian (không lỗi thời)"],["Official","/əˈfɪʃl/","Tính từ","Chính thức"],["Exceptional","/ɪkˈsepʃənl/","Tính từ","Xuất sắc, đặc biệt"],["Deadline","/ˈdedlaɪn/","Danh từ","Hạn chót"],["Patience","/ˈpeɪʃns/","Danh từ","Sự kiên nhẫn"],["Exhibit","/ɪɡˈzɪbɪt/","Danh từ","Vật trưng bày, triển lãm"],["Fade","/feɪd/","Động từ","Phai màu, mờ dần"],["Measures","/ˈmeʒərz/","Danh từ","Biện pháp"],["Contemporary","/kənˈtempəreri/","Tính từ","Đương đại"],["Discover","/dɪˈskʌvər/","Động từ","Khám phá, phát hiện"],["Edit","/ˈedɪt/","Động từ","Biên tập, chỉnh sửa"],["Result","/rɪˈzʌlt/","Danh từ","Kết quả"],["Clarify","/ˈklærəfaɪ/","Động từ","Làm rõ"],["Executive","/ɪɡˈzekjətɪv/","Danh từ","Ủy viên ban quản trị, giám đốc điều hành"],["Conduct","/kənˈdʌkt/","Động từ","Tiến hành, thực hiện"],["Belongings","/bɪˈlɔːŋɪŋz/","Danh từ","Đồ dùng cá nhân"],["Whimsical","/ˈwɪmzɪkl/","Tính từ","Bất thường, kỳ dị, hay thay đổi"],["Drastically","/ˈdræstɪkli/","Trạng từ","Một cách mạnh mẽ, quyết liệt"],["Fascinating","/ˈfæsɪneɪtɪŋ/","Tính từ","Hấp dẫn, lôi cuốn"],["Commissioner","/kəˈmɪʃənər/","Danh từ","Ủy viên"],["Allow","/əˈlaʊ/","Động từ","Cho phép"],["Ambitious","/æmˈbɪʃəs/","Tính từ","Có tham vọng, đầy hoài bão"],["Partial","/ˈpɑːrʃl/","Tính từ","Một phần"],["Power failure","/ˈpaʊər feɪljər/","Danh từ","Sự cố mất điện"],["Faulty","/ˈfɔːlti/","Tính từ","Bị lỗi, hỏng"],["Misinformation","/ˌmɪsɪnfərˈmeɪʃn/","Danh từ","Thông tin sai lệch"],["Limited","/ˈlɪmɪtɪd/","Tính từ","Có giới hạn"],["Device","/dɪˈvaɪs/","Danh từ","Thiết bị"],["Organic","/ɔːrˈɡænɪk/","Tính từ","Hữu cơ"],["Regular","/ˈreɡjələr/","Tính từ","Thường xuyên, đều đặn"],["In stock","/ɪn stɑːk/","Cụm từ","Còn hàng"],["Standard","/ˈstændərd/","Danh từ","Tiêu chuẩn"],["Dismantle","/dɪsˈmæntl/","Động từ","Tháo dỡ"],["Progress","/prəˈɡres/","Động từ","Tiến hành, tiến bộ"],["Peninsula","/pəˈnɪnsələ/","Danh từ","Bán đảo"],["Displeasure","/dɪsˈpleʒər/","Danh từ","Sự không hài lòng, khó chịu"],["Manufacturer","/ˌmænjuˈfæktʃərə/","Danh từ","Nhà sản xuất"],["Possess","/pəˈzes/","Động từ","Sở hữu"],["Refer","/rɪˈfɜːr/","Động từ","Giới thiệu, tham khảo"],["Charge","/tʃɑːrdʒ/","Động từ","Tính phí, nạp"],["Suggest","/səˈdʒest/","Động từ","Gợi ý, đề xuất"],["Inherit","/ɪnˈherɪt/","Động từ","Thừa kế"],["Urban","/ˈɜːrbən/","Tính từ","Thuộc thành thị"],["Automotive","/ˌɔːtəˈmoʊtɪv/","Tính từ","Thuộc về ô tô"],["Original","/əˈrɪdʒənl/","Tính từ","Ban đầu, gốc"],["Enquiry","/ɪnˈkwaɪəri/","Danh từ","Sự hỏi, điều tra (giống inquiry)"],["Application","/ˌæplɪˈkeɪʃn/","Danh từ","Đơn ứng tuyển, sự áp dụng"],["Submerge","/səbˈmɜːrdʒ/","Động từ","Nhấn chìm, lặn"],["Broadcast","/ˈbrɔːdkæst/","Động từ","Phát sóng"],["Property","/ˈprɑːpərti/","Danh từ","Bất động sản, tài sản"],["Method","/ˈmeθəd/","Danh từ","Phương pháp"],["Pharmaceutical","/ˌfɑːrməˈsuːtɪkl/","Tính từ","Thuộc dược phẩm"],["Decoration","/ˌdekəˈreɪʃn/","Danh từ","Sự trang trí, đồ trang trí"],["Charity","/ˈtʃærəti/","Danh từ","Tổ chức từ thiện"],["Treatment","/ˈtriːtmənt/","Danh từ","Sự điều trị, xử lý"],["Separately","/ˈseprətli/","Trạng từ","Một cách riêng biệt"],["Celebrate","/ˈselɪbreɪt/","Động từ","Kỷ niệm, ăn mừng"],["Pack","/pæk/","Động từ","Đóng gói"],["Collaboration","/kəˌlæbəˈreɪʃn/","Danh từ","Sự cộng tác"],["Payment","/ˈpeɪmənt/","Danh từ","Sự thanh toán"],["Compensate","/ˈkɑːmpenseɪt/","Động từ","Đền bù, bồi thường"],["Paradise","/ˈpærədaɪs/","Danh từ","Thiên đường"],["Persuade","/pərˈsweɪd/","Động từ","Thuyết phục"],["Critic","/ˈkrɪtɪk/","Danh từ","Nhà phê bình"],["Supplies","/səˈplaɪz/","Danh từ","Vật tư, nhu yếu phẩm"],["Porous","/ˈpɔːrəs/","Tính từ","Xốp, rỗ (thấm nước)"],["Persevere","/ˌpɜːrsəˈvɪr/","Động từ","Kiên trì"],["Ergonomic","/ˌɜːrɡəˈnɑːmɪk/","Tính từ","Thuộc về công thái học (thiết kế tối ưu cho con người)"],["Valuable","/ˈvæljuəbl/","Tính từ","Có giá trị, quý giá"],["Involvement","/ɪnˈvɑːlvmənt/","Danh từ","Sự tham gia, liên quan"],["Cordially","/ˈkɔːrdʒəli/","Trạng từ","Một cách thân mật, chân thành"],["Directions","/dəˈrekʃnz/","Danh từ","Lời chỉ dẫn, phương hướng"],["Take care of","/teɪk ker əv/","Cụm động từ","Chăm sóc, xử lý"],["Inventory","/ˈɪnvəntɔːri/","Danh từ","Hàng tồn kho, sự kiểm kê"],["Artificial","/ˌɑːrtɪˈfɪʃl/","Tính từ","Nhân tạo"],["Monitor","/ˈmɑːnɪtər/","Động từ","Giám sát, theo dõi"],["Contract","/ˈkɑːntrækt/","Danh từ","Hợp đồng"],["Customize","/ˈkʌstəmaɪz/","Động từ","Làm theo yêu cầu, tùy chỉnh"],["Screen","/skriːn/","Động từ","Sàng lọc, kiểm tra"],["Keynote speech","/ˈkiːnoʊt spiːtʃ/","Danh từ","Bài phát biểu chính"],["Inferior","/ɪnˈfɪriər/","Tính từ","Thấp kém hơn, cấp dưới"],["Enchanted","/ɪnˈtʃæntɪd/","Tính từ","Bị mê hoặc, như bị bỏ bùa"],["Innovative","/ˈɪnəveɪtɪv/","Tính từ","Có tính đổi mới, sáng tạo"],["Thorough","/ˈθɜːroʊ/","Tính từ","Cẩn thận, triệt để, kỹ lưỡng"],["Randomly","/ˈrændəmli/","Trạng từ","Một cách ngẫu nhiên"],["Smudge","/smʌdʒ/","Danh từ","Vết bẩn, vết lem"],["Advantage","/ədˈvæntɪdʒ/","Danh từ","Lợi thế, ưu điểm"],["Compact","/ˈkɑːmpækt/","Tính từ","Gọn nhẹ, nhỏ gọn"],["Protocol","/ˈproʊtəkɑːl/","Danh từ","Giao thức, quy định, nghi thức"],["Lean against","/liːn əˈɡenst/","Cụm động từ","Dựa vào"],["Assume","/əˈsuːm/","Động từ","Cho rằng, đảm nhận (trách nhiệm)"],["Résumé","/ˈrezəmeɪ/","Danh từ","Sơ yếu lý lịch"],["Goods","/ɡʊdz/","Danh từ","Hàng hóa"],["Adequate","/ˈædɪkwət/","Tính từ","Đầy đủ, thỏa đáng"],["Complimentary","/ˌkɑːmplɪˈmentri/","Tính từ","Miễn phí"],["Athlete","/ˈæθliːt/","Danh từ","Vận động viên"],["Transportation","/ˌtrænspɔːrˈteɪʃn/","Danh từ","Giao thông vận tải"],["Sign up for","/saɪn ʌp fɔːr/","Cụm động từ","Đăng ký"],["Expenditure","/ɪkˈspendɪtʃər/","Danh từ","Chi phí, sự tiêu dùng"],["Pathway","/ˈpæθweɪ/","Danh từ","Con đường, lối đi"],["Removal","/rɪˈmuːvl/","Danh từ","Sự dời đi, sự loại bỏ"],["Distinctive","/dɪˈstɪŋktɪv/","Tính từ","Đặc biệt, dễ phân biệt"],["Auction","/ˈɔːkʃn/","Danh từ","Cuộc đấu giá"],["Permit","/ˈpɜːrmɪt/","Danh từ","Giấy phép"],["Inadequate","/ɪnˈædɪkwət/","Tính từ","Không thỏa đáng, thiếu"],["Meeting minutes","/ˈmiːtɪŋ ˈmɪnɪts/","Danh từ","Biên bản cuộc họp"],["Abrasive","/əˈbreɪsɪv/","Tính từ","Có tính mài mòn, thô ráp"],["Identify","/aɪˈdentɪfaɪ/","Động từ","Nhận diện, xác định"],["Function","/ˈfʌŋkʃn/","Danh từ","Chức năng"],["Adjustment","/əˈdʒʌstmənt/","Danh từ","Sự điều chỉnh"],["Cross","/krɔːs/","Động từ","Băng qua, đi qua"],["Advertisement","/ˌædvərˈtaɪzmənt/","Danh từ","Quảng cáo"],["Occupy","/ˈɑːkjupaɪ/","Động từ","Chiếm giữ, cư ngụ"],["Ensure","/ɪnˈʃʊr/","Động từ","Đảm bảo"],["Solicit","/səˈlɪsɪt/","Động từ","Khẩn cầu, kêu gọi"],["Insight","/ˈɪnsaɪt/","Danh từ","Sự thấu hiểu, cái nhìn sâu sắc"],["Dentist","/ˈdentɪst/","Danh từ","Nha sĩ"],["Shortage","/ˈʃɔːrtɪdʒ/","Danh từ","Sự thiếu hụt"],["Paved","/peɪvd/","Tính từ","Được lát đường"],["Bustle","/ˈbʌsl/","Danh từ","Sự huyên náo, nhộn nhịp"],["Transaction","/trænˈzækʃn/","Danh từ","Giao dịch"],["Consumption","/kənˈsʌmpʃn/","Danh từ","Sự tiêu thụ"],["Comment","/ˈkɑːment/","Danh từ","Bình luận, ý kiến"],["Medication","/ˌmedɪˈkeɪʃn/","Danh từ","Thuốc, dược phẩm"],["Fund-raising","/ˈfʌnd reɪzɪŋ/","Danh từ","Gây quỹ"],["Liaison","/ˈliːəzɑːn/","Danh từ","Người liên lạc, sự liên lạc"],["Solve","/sɑːlv/","Động từ","Giải quyết"],["Lack","/læk/","Danh từ","Sự thiếu hụt"],["Distributor","/dɪˈstrɪbjətər/","Danh từ","Nhà phân phối"],["Advancement","/ədˈvænsmənt/","Danh từ","Sự tiến bộ, thăng tiến"],["Patio","/ˈpætioʊ/","Danh từ","Sân trong, hiên nhà"],["Summarize","/ˈsʌməraɪz/","Động từ","Tóm tắt"],["Notable","/ˈnoʊtəbl/","Tính từ","Đáng chú ý"],["Diverse","/daɪˈvɜːrs/","Tính từ","Đa dạng"],["Garage","/ɡəˈrɑːʒ/","Danh từ","Nhà để xe, gara"],["Address","/əˈdres/","Động từ","Giải quyết, xử lý (vấn đề)"],["Feed","/fiːd/","Động từ","Cho ăn"],["Attendance","/əˈtendəns/","Danh từ","Sự tham dự, chuyên cần"],["Utensil","/juːˈtensl/","Danh từ","Dụng cụ (thường dùng trong nhà bếp)"],["Prime","/praɪm/","Tính từ","Ưu tú, hàng đầu"],["City hall","/ˈsɪti hɔːl/","Danh từ","Tòa thị chính"],["Possession","/pəˈzeʃn/","Danh từ","Sự sở hữu, tài sản"],["Agriculture","/ˈæɡrɪkʌltʃər/","Danh từ","Nông nghiệp"],["Retire","/rɪˈtaɪər/","Động từ","Nghỉ hưu"],["Committee","/kəˈmɪti/","Danh từ","Ủy ban"],["Unsuitable","/ʌnˈsuːtəbl/","Tính từ","Không phù hợp"],["Institute","/ˈɪnstɪtuːt/","Danh từ","Viện, học viện"],["Procurement","/prəˈkjʊrmənt/","Danh từ","Sự thu mua, mua sắm"],["Tenant","/ˈtenənt/","Danh từ","Người thuê (nhà, đất)"],["Flat rate","/ˌflæt ˈreɪt/","Danh từ","Mức phí cố định"],["Suggestion","/səˈdʒestʃən/","Danh từ","Sự đề xuất, gợi ý"],["Reasonable","/ˈriːznəbl/","Tính từ","Hợp lý, phải chăng"],["Go over","/ɡoʊ ˈoʊvər/","Cụm động từ","Xem xét kỹ, kiểm tra"],["Margin","/ˈmɑːrdʒɪn/","Danh từ","Lề, mép; biên độ (lợi nhuận)"],["Appoint","/əˈpɔɪnt/","Động từ","Bổ nhiệm"],["Directory","/dəˈrektəri/","Danh từ","Danh bạ, cẩm nang chỉ dẫn"],["Structure","/ˈstrʌktʃər/","Động từ","Cấu trúc, tổ chức"],["Measure","/ˈmeʒər/","Động từ","Đo lường"],["Landmark","/ˈlændmɑːrk/","Danh từ","Danh lam thắng cảnh, cột mốc"],["Coordinator","/koʊˈɔːrdɪneɪtər/","Danh từ","Điều phối viên"],["Inaccurate","/ɪnˈækjərət/","Tính từ","Không chính xác"],["Reward","/rɪˈwɔːrd/","Động từ/danh…","Thưởng / Phần thưởng"],["Shift","/ʃɪft/","Danh từ","Ca làm việc"],["Disposal","/dɪˈspoʊzl/","Danh từ","Sự xử lý, vứt bỏ"],["Discarded","/dɪˈskɑːrdɪd/","Tính từ","Bị loại bỏ, vứt bỏ"],["Stand out","/stænd aʊt/","Cụm động từ","Nổi bật"],["Anniversary","/ˌænɪˈvɜːrsəri/","Danh từ","Lễ kỷ niệm"],["Reassign","/ˌriːəˈsaɪn/","Động từ","Phân công lại"],["Secure","/səˈkjʊr/","Động từ","Đạt được, bảo đảm"],["Accurately","/ˈækjərətli/","Trạng từ","Một cách chính xác"],["Cause","/kɔːz/","Động từ","Gây ra"],["Assist","/əˈsɪst/","Động từ","Hỗ trợ, giúp đỡ"],["Component","/kəmˈpoʊnənt/","Danh từ","Thành phần, linh kiện"],["Acceptable","/əkˈseptəbl/","Tính từ","Chấp nhận được"],["Embrace","/ɪmˈbreɪs/","Động từ","Đón nhận, ôm"],["Substantial","/səbˈstænʃl/","Tính từ","Đáng kể"],["Narrative","/ˈnærətɪv/","Danh từ","Câu chuyện, bài tường thuật"],["Informal","/ɪnˈfɔːrml/","Tính từ","Thân mật, không trang trọng"],["Youth","/juːθ/","Danh từ","Tuổi trẻ, thanh xuân"],["Correct","/kəˈrekt/","Tính từ","Chính xác, đúng"],["Unprecedented","/ʌnˈpresɪdentɪd/","Tính từ","Chưa từng có tiền lệ"],["Overseas","/ˌoʊvərˈsiːz/","Tính từ","Ở nước ngoài / Thuộc nước ngoài"],["Supplier","/səˈplaɪər/","Danh từ","Nhà cung cấp"],["Vacant","/ˈveɪkənt/","Tính từ","Trống, bỏ không, còn trống (vị trí)"],["Step down","/step daʊn/","Cụm động từ","Từ chức, nghỉ hưu"],["Attendee","/ˌætənˈdiː/","Danh từ","Người tham dự"],["Sponsor","/ˈspɑːnsər/","Danh từ","Nhà tài trợ"],["Effective","/ɪˈfektɪv/","Tính từ","Hiệu quả"],["Spokesperson","/ˈspoʊks pɜːrsn/","Danh từ","Người phát ngôn"],["Biography","/baɪˈɑːɡrəfi/","Danh từ","Tiểu sử"],["Fix","/fɪks/","Động từ","Sửa chữa, khắc phục"],["Athletic","/æθˈletɪk/","Tính từ","Thuộc về thể thao"],["Institution","/ˌɪnstɪˈtuːʃn/","Danh từ","Tổ chức, cơ quan"],["Attend","/əˈtend/","Động từ","Tham dự"],["Typically","/ˈtɪpɪkli/","Trạng từ","Thông thường"],["Organizer","/ˈɔːrɡənaɪzər/","Danh từ","Người tổ chức"],["Hands-on","/ˌhændz ˈɑːn/","Tính từ","Thực tế, thực hành"],["Bold","/boʊld/","Tính từ","Táo bạo, dũng cảm, đậm (nét)"],["Integral","/ˈɪntɪɡrəl/","Tính từ","Không thể thiếu, trọn vẹn"],["Compete","/kəmˈpiːt/","Động từ","Cạnh tranh"],["Foster","/ˈfɔːstər/","Động từ","Thúc đẩy, nuôi dưỡng"],["Mechanic","/məˈkænɪk/","Danh từ","Thợ cơ khí"],["Sterile","/ˈsterəl/","Tính từ","Vô trùng, tiệt trùng"],["Branch","/bræntʃ/","Danh từ","Chi nhánh"],["Deterrence","/dɪˈtɜːrəns/","Danh từ","Sự ngăn chặn, răn đe"],["Personnel","/ˌpɜːrsəˈnel/","Danh từ","Nhân sự"],["Exceptionally","/ɪkˈsepʃənəli/","Trạng từ","Một cách xuất chúng, khác thường"],["Select","/sɪˈlekt/","Động từ","Lựa chọn"],["Disagree","/ˌdɪsəˈɡriː/","Động từ","Không đồng ý"],["Administrative","/ədˈmɪnɪstreɪtɪv/","Tính từ","Thuộc hành chính"],["On behalf of","/ɑːn bɪˈhæf əv/","Cụm giới từ","Thay mặt cho"],["Rapid","/ˈræpɪd/","Tính từ","Nhanh chóng"],["Overnight","/ˌoʊvərˈnaɪt/","Trạng từ","Qua đêm"],["Shred","/ʃred/","Động từ","Cắt nhỏ, hủy (tài liệu)"],["Put together","/pʊt təˈɡeðər/","Cụm động từ","Lắp ráp, tập hợp"],["Initially","/ɪˈnɪʃəli/","Trạng từ","Ban đầu"],["Tremendous","/trəˈmendəs/","Tính từ","To lớn, khủng khiếp"],["Visible","/ˈvɪzəbl/","Tính từ","Có thể nhìn thấy, rõ ràng"],["Agenda","/əˈdʒendə/","Danh từ","Chương trình nghị sự"],["Account","/əˈkaʊnt/","Danh từ","Tài khoản"],["Takeoff","/ˈteɪk ɔːf/","Danh từ","Sự cất cánh"],["Boarding pass","/ˈbɔːrdɪŋ pæs/","Danh từ","Thẻ lên máy bay"],["Appearance","/əˈpɪrəns/","Danh từ","Sự xuất hiện, vẻ bề ngoài"],["Insurance","/ɪnˈʃʊrəns/","Danh từ","Bảo hiểm"],["Sturdy","/ˈstɜːrdi/","Tính từ","Cứng cáp, vững chắc"],["Recommendation","/ˌrekəmenˈdeɪʃn/","Danh từ","Sự giới thiệu, lời khuyên"],["Ultimately","/ˈʌltɪmətli/","Trạng từ","Cuối cùng, rốt cuộc"],["Expansion","/ɪkˈspænʃn/","Danh từ","Sự mở rộng"],["Convinced","/kənˈvɪnst/","Tính từ","Tin chắc, bị thuyết phục"],["Dynamic","/daɪˈnæmɪk/","Tính từ","Năng động"],["Memoir","/ˈmemwɑːr/","Danh từ","Hồi ký"],["Improve","/ɪmˈpruːv/","Động từ","Cải thiện, nâng cao"],["Reputation","/ˌrepjuˈteɪʃn/","Danh từ","Danh tiếng"],["Essential","/ɪˈsenʃl/","Tính từ","Thiết yếu, quan trọng"],["Usually","/ˈjuːʒuəli/","Trạng từ","Thường xuyên, thông thường"],["Recruit","/rɪˈkruːt/","Động từ","Tuyển dụng"],["Temperature","/ˈtemprətʃər/","Danh từ","Nhiệt độ"],["Fundamental","/ˌfʌndəˈmentl/","Tính từ","Cơ bản, nền tảng"],["Acquisition","/ˌækwɪˈzɪʃn/","Danh từ","Sự giành được, sự thâu tóm (công ty)"],["Paperwork","/ˈpeɪpərwɜːrk/","Danh từ","Công việc giấy tờ, thủ tục hành chính"],["Floor plan","/ˈflɔːr plæn/","Danh từ","Sơ đồ mặt bằng"],["Achievement","/əˈtʃiːvmənt/","Danh từ","Thành tựu"],["Tendency","/ˈtendənsi/","Danh từ","Khuynh hướng"],["Placement","/ˈpleɪsmənt/","Danh từ","Sự sắp đặt, vị trí"],["Flyer","/ˈflaɪər/","Danh từ","Tờ rơi"],["Unveil","/ˌʌnˈveɪl/","Động từ","Tiết lộ, công bố, khánh thành"],["Misunderstanding","/ˌmɪsʌndərˈstændɪŋ/","Danh từ","Sự hiểu lầm"],["Immediately","/ɪˈmiːdiətli/","Trạng từ","Ngay lập tức"],["Plotline","/ˈplɑːtlaɪn/","Danh từ","Cốt truyện"],["Suburban","/səˈbɜːrbən/","Tính từ","Thuộc ngoại ô"],["Eager","/ˈiːɡər/","Tính từ","Háo hức, thiết tha"],["Consult","/kənˈsʌlt/","Động từ","Tham khảo ý kiến, tư vấn"],["Stack","/stæk/","Động từ","Chất đống"],["Life-size","/ˈlaɪf saɪz/","Tính từ","Kích thước thật"],["Integrity","/ɪnˈteɡrəti/","Danh từ","Sự chính trực, tính toàn vẹn"],["Exterior","/ɪkˈstɪriər/","Tính từ","Bên ngoài"],["Indeed","/ɪnˈdiːd/","Trạng từ","Thực sự, quả thực"],["Luggage","/ˈlʌɡɪdʒ/","Danh từ","Hành lý"],["Significant","/sɪɡˈnɪfɪkənt/","Tính từ","Đáng kể, quan trọng"],["Handy","/ˈhændi/","Tính từ","Tiện dụng, hữu ích"],["Episode","/ˈepɪsoʊd/","Danh từ","Tập (phim, chương trình)"],["Decision","/dɪˈsɪʒn/","Danh từ","Quyết định"],["Separate","/ˈseprət/","Tính từ","Riêng biệt, tách rời"],["Addition","/əˈdɪʃn/","Danh từ","Sự thêm vào, bổ sung"],["Cost","/kɔːst/","Động từ","Tốn kém, trị giá"],["Promotional","/prəˈmoʊʃənl/","Tính từ","Thuộc quảng cáo, khuyến mãi"],["Register","/ˈredʒɪstər/","Danh từ","Máy tính tiền"],["Generate","/ˈdʒenəreɪt/","Động từ","Tạo ra, phát sinh"],["Rapidly","/ˈræpɪdli/","Trạng từ","Nhanh chóng"],["Narrow","/ˈnæroʊ/","Tính từ","Thu hẹp / Chật hẹp"],["Assistant","/əˈsɪstənt/","Danh từ","Trợ lý, phụ tá"],["Contribute","/kənˈtrɪbjuːt/","Động từ","Đóng góp, góp phần"],["Annual","/ˈænjuəl/","Tính từ","Hằng năm, thường niên"],["Realize","/ˈriːəlaɪz/","Động từ","Nhận ra"],["Imminent","/ˈɪmɪnənt/","Tính từ","Sắp xảy ra, lơ lửng"],["Reception","/rɪˈsepʃn/","Danh từ","Tiệc chiêu đãi"],["Transcript","/ˈtrænskrɪpt/","Danh từ","Bảng điểm, bản sao"],["Extensively","/ɪkˈstensɪvli/","Trạng từ","Một cách rộng rãi, bao quát"],["Verify","/ˈverɪfaɪ/","Động từ","Xác minh"],["Go through","/ɡoʊ θruː/","Cụm động từ","Kiểm tra, xem xét kỹ lưỡng"],["Enter","/ˈentər/","Động từ","Tham gia (cuộc thi), đi vào"],["Commute","/kəˈmjuːt/","Động từ","Đi làm, đi lại thường xuyên"],["Confirm","/kənˈfɜːrm/","Động từ","Xác nhận"],["Showcase","/ˈʃoʊkeɪs/","Động từ","Trưng bày, phô diễn"],["Abstract","/ˈæbstrækt/","Tính từ","Trừu tượng"],["Nonprofit","/ˌnɑːnˈprɑːfɪt/","Tính từ","Phi lợi nhuận"],["Calculate","/ˈkælkjuleɪt/","Động từ","Tính toán"],["Substitute","/ˈsʌbstɪtuːt/","Động từ","Thay thế"],["Leftover","/ˈleftoʊvər/","Tính từ","Thừa, còn lại"],["Whisper","/ˈwɪspər/","Động từ","Thì thầm"],["Storage","/ˈstɔːrɪdʒ/","Danh từ","Kho, sự lưu trữ"],["Crowded","/ˈkraʊdɪd/","Tính từ","Đông đúc"],["Evaluate","/ɪˈvæljueɪt/","Động từ","Đánh giá"],["Entrance","/ˈentrəns/","Danh từ","Lối vào"],["Current","/ˈkɜːrənt/","Tính từ","Hiện tại"],["Venue","/ˈvenjuː/","Danh từ","Địa điểm tổ chức"],["In advance","/ɪn ədˈvæns/","Cụm từ","Trước (thời gian)"],["Accounting","/əˈkaʊntɪŋ/","Danh từ","Kế toán"],["Vacancy","/ˈveɪkənsi/","Danh từ","Vị trí trống, chỗ trống"],["Rate","/reɪt/","Danh từ","Mức giá, phí"],["Entrust","/ɪnˈtrʌst/","Động từ","Giao phó, ủy thác"],["Flavor","/ˈfleɪvər/","Danh từ","Hương vị"],["Occur","/əˈkɜːr/","Động từ","Xảy ra"],["Shortcoming","/ˈʃɔːrtkʌmɪŋ/","Danh từ","Khuyết điểm, thiếu sót"],["Aspiring","/əˈspaɪərɪŋ/","Tính từ","Có khát vọng, muốn trở thành"],["Appreciative","/əˈpriːʃətɪv/","Tính từ","Biết ơn, đánh giá cao"],["Worth","/wɜːrθ/","Tính từ","Đáng giá, có giá trị"],["Inspiration","/ˌɪnspəˈreɪʃn/","Danh từ","Cảm hứng"],["Definition","/ˌdefɪˈnɪʃn/","Danh từ","Định nghĩa"],["Crew","/kruː/","Danh từ","Đội, nhóm, phi hành đoàn"],["Highlight","/ˈhaɪlaɪt/","Danh từ","Điểm nổi bật"],["Workstation","/ˈwɜːrksteɪʃn/","Danh từ","Khu vực làm việc, bàn làm việc"],["Bulletin board","/ˈbʊlətɪn bɔːrd/","Danh từ","Bảng tin"],["Adopt","/əˈdɑːpt/","Động từ","Thông qua, áp dụng"],["Discard","/dɪˈskɑːrd/","Động từ","Loại bỏ, vứt bỏ"],["Gratitude","/ˈɡrætɪtuːd/","Danh từ","Lòng biết ơn"],["Trend","/trend/","Danh từ","Xu hướng"],["Inspiring","/ɪnˈspaɪərɪŋ/","Tính từ","Truyền cảm hứng"],["Remain","/rɪˈmeɪn/","Động từ","Duy trì, còn lại"],["Trim","/trɪm/","Động từ","Cắt tỉa, chỉnh sửa"],["Enlarge","/ɪnˈlɑːrdʒ/","Động từ","Mở rộng, phóng to"],["Approximately","/əˈprɑːksɪmətli/","Trạng từ","Khoảng, xấp xỉ"],["Explain","/ɪkˈspleɪn/","Động từ","Giải thích"],["Enroll in","/ɪnˈroʊl ɪn/","Cụm động từ","Ghi danh, đăng ký vào"],["Seal","/siːl/","Động từ","Niêm phong, dán kín"],["Prescription","/prɪˈskrɪpʃn/","Danh từ","Đơn thuốc"],["Detach","/dɪˈtætʃ/","Động từ","Tháo gỡ, tách ra"],["Previous","/ˈpriːviəs/","Tính từ","Trước đó"],["Electronics","/ɪˌlekˈtrɑːnɪks/","Danh từ","Thiết bị điện tử"],["Job posting","/dʒɑːb ˈpoʊstɪŋ/","Danh từ","Tin tuyển dụng"],["Predecessor","/ˈpredəsesər/","Danh từ","Người tiền nhiệm"],["Politeness","/pəˈlaɪtnəs/","Danh từ","Sự lịch sự, lễ phép"],["Professional","/prəˈfeʃənl/","Tính từ","Chuyên nghiệp"],["Stabilization","/ˌsteɪbələˈzeɪʃn/","Danh từ","Sự ổn định"],["Respective","/rɪˈspektɪv/","Tính từ","Tương ứng (của riêng từng người/vật)"],["Observe","/əbˈzɜːrv/","Động từ","Kỷ niệm (lễ), tuân thủ, quan sát"],["Initiative","/ɪˈnɪʃətɪv/","Danh từ","Sáng kiến, kế hoạch mới"],["Certification","/ˌsɜːrtɪfɪˈkeɪʃn/","Danh từ","Giấy chứng nhận"],["Revise","/rɪˈvaɪz/","Động từ","Chỉnh sửa, sửa đổi"],["Overall","/ˌoʊvərˈɔːl/","Tính từ","Tổng thể, toàn bộ"],["Identification","/aɪˌdentɪfɪˈkeɪʃn/","Danh từ","Giấy tờ tùy thân, sự nhận dạng"],["Catering","/ˈkeɪtərɪŋ/","Danh từ","Dịch vụ cung cấp đồ ăn"],["Synthetic","/sɪnˈθetɪk/","Tính từ","Tổng hợp, nhân tạo"],["Opposition","/ˌɑːpəˈzɪʃn/","Danh từ","Sự phản đối"],["Open position","/ˈoʊpən pəˈzɪʃn/","Danh từ","Vị trí trống (cần tuyển dụng)"],["Warehouse","/ˈwerhaʊs/","Danh từ","Nhà kho"],["Infusion","/ɪnˈfjuːʒn/","Danh từ","Sự truyền vào, sự thêm vào"],["Departure","/dɪˈpɑːrtʃər/","Danh từ","Sự khởi hành"],["Architecture","/ˈɑːrkɪtektʃər/","Danh từ","Kiến trúc"],["Promotion","/prəˈmoʊʃn/","Danh từ","Sự thăng chức, sự quảng bá"],["Accept","/əkˈsept/","Động từ","Chấp nhận"],["Indicate","/ˈɪndɪkeɪt/","Động từ","Chỉ ra, biểu thị"],["Registration","/ˌredʒɪˈstreɪʃn/","Danh từ","Sự đăng ký"],["Introductory","/ˌɪntrəˈdʌktəri/","Tính từ","Giới thiệu, mở đầu"],["Banquet","/ˈbæŋkwɪt/","Danh từ","Bữa tiệc lớn, yến tiệc"],["Host","/hoʊst/","Động từ","Đăng cai, tổ chức"],["Malfunction","/ˌmælˈfʌŋkʃn/","Động từ","Gặp trục trặc, hỏng hóc"],["Drawing","/ˈdrɔːɪŋ/","Danh từ","Lễ bốc thăm trúng thưởng"],["Excursion","/ɪkˈskɜːrʒn/","Danh từ","Chuyến tham quan, dã ngoại"],["Architect","/ˈɑːrkɪtekt/","Danh từ","Kiến trúc sư"],["Getaway","/ˈɡetəweɪ/","Danh từ","Chuyến đi nghỉ ngắn ngày"],["Secondhand","/ˌsekəndˈhænd/","Tính từ","Đã qua sử dụng, cũ"],["Volunteer","/ˌvɑːlənˈtɪr/","Động từ / Dan…","Làm tình nguyện / Tình nguyện viên"],["Cover","/ˈkʌvər/","Động từ","Đưa tin, bao phủ, chi trả"],["Relocate","/ˌriːˈloʊkeɪt/","Động từ","Di dời, chuyển địa điểm"],["Inaugural","/ɪˈnɔːɡjərəl/","Tính từ","Khai trương, khánh thành, đầu tiên"],["Soundproof","/ˈsaʊndpruːf/","Tính từ","Cách âm"],["Tie","/taɪ/","Động từ","Buộc, thắt"],["Sacrifice","/ˈsækrɪfaɪs/","Động từ","Hy sinh"],["Agree","/əˈɡriː/","Động từ","Đồng ý"],["Carry","/ˈkæri/","Động từ","Mang, vác, đem theo"],["Recruitment","/rɪˈkruːtmənt/","Danh từ","Sự tuyển dụng"],["Instruction","/ɪnˈstrʌkʃn/","Danh từ","Sự hướng dẫn"],["Surface","/ˈsɜːrfɪs/","Danh từ","Bề mặt"],["Owner","/ˈoʊnər/","Danh từ","Chủ sở hữu"],["Formal","/ˈfɔːrml/","Tính từ","Trang trọng, chính thức"],["Investment","/ɪnˈvestmənt/","Danh từ","Khoản đầu tư, sự đầu tư"],["Soil","/sɔɪl/","Danh từ","Đất trồng"],["Superintendent","/ˌsuːpərɪnˈtendənt/","Danh từ","Người giám sát, giám thị"],["Unexpected","/ˌʌnɪkˈspektɪd/","Tính từ","Bất ngờ, không mong đợi"],["Contribution","/ˌkɑːntrɪˈbjuːʃn/","Danh từ","Sự đóng góp, bài đóng góp"],["Administration","/ədˌmɪnɪˈstreɪʃn/","Danh từ","Sự quản lý, chính quyền"],["Alternative","/ɔːlˈtɜːrnətɪv/","Danh từ","Sự thay thế, phương án khác"],["Audiovisual","/ˌɔːdioʊˈvɪʒuəl/","Tính từ","Nghe nhìn"],["Awareness","/əˈwernəs/","Danh từ","Nhận thức"],["Variation","/ˌveriˈeɪʃn/","Danh từ","Sự biến đổi, biến thể"],["Frequently","/ˈfriːkwəntli/","Trạng từ","Thường xuyên"],["Beverage","/ˈbevərɪdʒ/","Danh từ","Đồ uống"],["Qualification","/ˌkwɑːlɪfɪˈkeɪʃn/","Danh từ","Trình độ chuyên môn, bằng cấp"],["Optimize","/ˈɑːptɪmaɪz/","Động từ","Tối ưu hóa"],["Illusion","/ɪˈluːʒn/","Danh từ","Ảo giác, ảo tưởng"],["Distribute","/dɪˈstrɪbjuːt/","Động từ","Phân phối"],["Detailed","/ˈdiːteɪld/","Tính từ","Chi tiết, tỉ mỉ"],["Custodian","/kʌˈstoʊdiən/","Danh từ","Người trông coi, nhân viên tạp vụ"],["Infuse","/ɪnˈfjuːz/","Động từ","Truyền vào, ngấm vào"],["Automated","/ˈɔːtəmeɪtɪd/","Tính từ","Tự động hóa"],["Hospitality","/ˌhɑːspɪˈtæləti/","Danh từ","Lòng mến khách, ngành dịch vụ khách sạn"],["Information","/ˌɪnfərˈmeɪʃn/","Danh từ","Thông tin"],["Cleanliness","/ˈklenlinəs/","Danh từ","Sự sạch sẽ"],["Publish","/ˈpʌblɪʃ/","Động từ","Xuất bản, công bố"],["Objection","/əbˈdʒekʃn/","Danh từ","Sự phản đối"],["Unload","/ˌʌnˈloʊd/","Động từ","Dỡ hàng"],["Pediatric","/ˌpiːdiˈætrɪk/","Tính từ","Thuộc nha khoa/y khoa trẻ em"],["Reveal","/rɪˈviːl/","Động từ","Tiết lộ, bộc lộ"],["Instructions","/ɪnˈstrʌkʃnz/","Danh từ","Hướng dẫn"],["Compile","/kəmˈpaɪl/","Động từ","Biên soạn, tổng hợp"],["Upstairs","/ˌʌpˈsterz/","Tính từ","Ở tầng trên"],["Opposite","/ˈɑːpəzɪt/","Giới từ","Đối diện"],["Collaborate","/kəˈlæbəreɪt/","Động từ","Hợp tác"],["Nutritious","/nuˈtrɪʃəs/","Tính từ","Bổ dưỡng"],["Disease","/dɪˈziːz/","Danh từ","Bệnh tật"],["Firm","/fɜːrm/","Tính từ","Cứng, chắc chắn"],["Retain","/rɪˈteɪn/","Động từ","Giữ lại, duy trì"],["Confident","/ˈkɑːnfɪdənt/","Tính từ","Tự tin"],["Bucket","/ˈbʌkɪt/","Danh từ","Cái xô, thùng"],["Merchandise","/ˈmɜːrtʃəndaɪs/","Danh từ","Hàng hóa"],["Appendix","/əˈpendɪks/","Danh từ","Phụ lục"],["Unpredictability","/ˌʌnprɪˌdɪktəˈbɪləti/","Danh từ","Sự không thể đoán trước"],["Process","/ˈprɑːses/","Danh từ","Quy trình, quá trình"],["Decrease","/dɪˈkriːs/","Động từ","Giảm xuống"],["Incorrect","/ˌɪnkəˈrekt/","Tính từ","Không chính xác"],["Undergo","/ˌʌndərˈɡoʊ/","Động từ","Trải qua"],["Share","/ʃer/","Động từ","Chia sẻ"],["Honor","/ˈɑːnər/","Danh từ","Danh dự, giải thưởng"],["Irrigation","/ˌɪrɪˈɡeɪʃn/","Danh từ","Sự tưới tiêu"],["Innovation","/ˌɪnəˈveɪʃn/","Danh từ","Sự đổi mới, sáng kiến"],["Skilled","/skɪld/","Tính từ","Lành nghề, khéo léo"],["Intersection","/ˌɪntərˈsekʃn/","Danh từ","Giao lộ, ngã tư"],["Council","/ˈkaʊnsl/","Danh từ","Hội đồng"],["Supportive","/səˈpɔːrtɪv/","Tính từ","Hỗ trợ, ủng hộ"],["Feature","/ˈfiːtʃər/","Động từ","Bao gồm, có tính năng"],["Analysis","/əˈnæləsɪs/","Danh từ","Sự phân tích"],["Precision","/prɪˈsɪʒn/","Danh từ","Độ chính xác"],["Route","/ruːt/","Danh từ","Tuyến đường, lộ trình"],["Streamline","/ˈstriːmlaɪn/","Động từ","Tinh giản, hợp lý hóa (quy trình)"],["Collection","/kəˈlekʃn/","Danh từ","Bộ sưu tập"],["Craft","/kræft/","Danh từ","Thủ công, nghề thủ công"],["Invoice","/ˈɪnvɔɪs/","Danh từ","Hóa đơn"],["Reserve","/rɪˈzɜːrv/","Động từ","Đặt trước, dự trữ"],["Consumer","/kənˈsuːmər/","Danh từ","Người tiêu dùng"],["Script","/skrɪpt/","Danh từ","Kịch bản"],["Certificate","/sərˈtɪfɪkət/","Danh từ","Giấy chứng nhận, chứng chỉ"],["Sold out","/soʊld aʊt/","Tính từ","Hết hàng, bán hết"],["Concerned","/kənˈsɜːrnd/","Tính từ","Lo lắng, quan tâm"],["Suspicious","/səˈspɪʃəs/","Tính từ","Khả nghi, đáng ngờ"],["Expired","/ɪkˈspaɪərd/","Tính từ","Hết hạn"],["Pitch","/pɪtʃ/","Danh từ","Bài chào hàng, lời rao"],["Informed","/ɪnˈfɔːrmd/","Tính từ","Có hiểu biết, dựa trên thông tin"],["Extensive","/ɪkˈstensɪv/","Tính từ","Quảng đại, bao quát, chuyên sâu"],["Administrator","/ədˈmɪnɪstreɪtər/","Danh từ","Người quản lý, quản trị viên"],["Composer","/kəmˈpoʊzər/","Danh từ","Nhà soạn nhạc, tác giả"],["Presence","/ˈprezns/","Danh từ","Sự hiện diện"],["Extension","/ɪkˈstenʃn/","Danh từ","Sự mở rộng, máy nhánh (điện thoại)"],["Vintage","/ˈvɪntɪdʒ/","Tính từ","Cổ điển, kinh điển"],["Regularly","/ˈreɡjələrli/","Trạng từ","Thường xuyên, đều đặn"],["Spectacular","/spekˈtækjələr/","Tính từ","Hùng vĩ, ngoạn mục"],["Prospective","/prəˈspektɪv/","Tính từ","Tiềm năng, triển vọng"],["Sleek","/sliːk/","Tính từ","Kiểu dáng đẹp, bóng mượt"],["Private","/ˈpraɪvət/","Tính từ","Riêng tư, cá nhân"],["Spacious","/ˈspeɪʃəs/","Tính từ","Rộng rãi"],["Expand","/ɪkˈspænd/","Động từ","Mở rộng"],["Commuter","/kəˈmjuːtər/","Danh từ","Người đi làm xa (thường xuyên di chuyển)"],["Fertilizer","/ˈfɜːrtəlaɪzər/","Danh từ","Phân bón"],["Frequent","/ˈfriːkwənt/","Tính từ","Thường xuyên"],["Capability","/ˌkeɪpəˈbɪləti/","Danh từ","Khả năng, năng lực"],["Productivity","/ˌproʊdʌkˈtɪvəti/","Danh từ","Năng suất"],["Efficiently","/ɪˈfɪʃntli/","Trạng từ","Một cách hiệu quả"],["Store","/stɔːr/","Động từ","Lưu trữ, cất giữ"],["Savory","/ˈseɪvəri/","Tính từ","Thơm ngon, có vị mặn (không ngọt)"],["Assignment","/əˈsaɪnmənt/","Danh từ","Nhiệm vụ, sự phân công"],["Author","/ˈɔːθər/","Danh từ","Tác giả"],["Invest","/ɪnˈvest/","Động từ","Đầu tư"],["Revised","/rɪˈvaɪzd/","Tính từ","Đã được sửa đổi, điều chỉnh"],["Residence","/ˈrezɪdəns/","Danh từ","Nơi cư trú"],["Radius","/ˈreɪdiəs/","Danh từ","Bán kính, phạm vi"],["Get the word out","/ɡet ðə wɜːrd aʊt/","Cụm động từ","Loan tin, truyền tin"],["Popularity","/ˌpɑːpjuˈlærəti/","Danh từ","Sự phổ biến"],["Subscription","/səbˈskrɪpʃn/","Danh từ","Sự đăng ký (báo, tạp chí)"],["Originally","/əˈrɪdʒənəli/","Trạng từ","Ban đầu, vốn dĩ"],["Postpone","/poʊˈspoʊn/","Động từ","Trì hoãn"],["Choreography","/ˌkɔːriˈɑːɡrəfi/","Danh từ","Biên đạo múa, nghệ thuật múa"],["Miss","/mɪs/","Động từ","Bỏ lỡ, nhớ"],["Target audience","/ˈtɑːrɡɪt ˈɔːdiəns/","Danh từ","Khách hàng mục tiêu"],["Reminder","/rɪˈmaɪndər/","Danh từ","Lời nhắc nhở"],["Biographer","/baɪˈɑːɡrəfər/","Danh từ","Người viết tiểu sử"],["Reference","/ˈrefrəns/","Danh từ","Tài liệu tham khảo, sự giới thiệu"],["Proof","/pruːf/","Danh từ","Bằng chứng"],["Voucher","/ˈvaʊtʃər/","Danh từ","Phiếu mua hàng, phiếu giảm giá"],["Predict","/prɪˈdɪkt/","Động từ","Dự đoán"],["Functionality","/ˌfʌŋkʃəˈnæləti/","Danh từ","Tính năng, công dụng"],["Appliance","/əˈplaɪəns/","Danh từ","Thiết bị, dụng cụ (thường là gia dụng)"],["Diagnose","/ˌdaɪəɡˈnoʊs/","Động từ","Chẩn đoán"],["Rent","/rent/","Động từ","Thuê"],["Inappropriate","/ˌɪnəˈproʊpriət/","Tính từ","Không phù hợp"],["Rake","/reɪk/","Động từ","Cào (lá, đất)"],["Rug","/rʌɡ/","Danh từ","Tấm thảm"],["Term","/tɜːrm/","Danh từ","Thuật ngữ, kỳ hạn"],["Rental","/ˈrentl/","Danh từ","Sự thuê mướn"],["Physician","/fɪˈzɪʃn/","Danh từ","Bác sĩ (đa khoa/nội khoa)"],["Socialise","/ˈsoʊʃəlaɪz/","Động từ","Giao lưu, hòa nhập"],["Consistently","/kənˈsɪstəntli/","Trạng từ","Một cách nhất quán"],["Technical","/ˈteknɪkl/","Tính từ","Thuộc về kỹ thuật, chuyên môn"],["Nationwide","/ˌneɪʃnˈwaɪd/","Trạng từ","Trên toàn quốc"],["Individual","/ˌɪndɪˈvɪdʒuəl/","Danh từ","Cá nhân/Riêng lẻ (adj)"],["Submission","/səbˈmɪʃn/","Danh từ","Sự nộp, hồ sơ đệ trình"],["Position","/pəˈzɪʃn/","Danh từ","Vị trí, tư thế"],["Accordingly","/əˈkɔːrdɪŋli/","Trạng từ","Một cách phù hợp, theo đó"],["Decorative","/ˈdekəreɪtɪv/","Tính từ","Mang tính trang trí"],["Exploit","/ɪkˈsplɔɪt/","Động từ","Khai thác, tận dụng"],["Expense","/ɪkˈspens/","Danh từ","Chi phí"],["Easygoing","/ˌiːziˈɡoʊɪŋ/","Tính từ","Dễ tính, thoải mái"],["Warranty","/ˈwɔːrənti/","Danh từ","Sự bảo hành"],["Quote","/kwoʊt/","Động từ","Trích dẫn, báo giá"],["Greet","/ɡriːt/","Động từ","Chào đón"],["Decay","/dɪˈkeɪ/","Động từ","Suy tàn, mục nát"],["Audience","/ˈɔːdiəns/","Danh từ","Khán giả, thính giả"],["Time sheet","/ˈtaɪm ʃiːt/","Danh từ","Bảng chấm công"],["Funding","/ˈfʌndɪŋ/","Danh từ","Kinh phí, nguồn quỹ"],["Consideration","/kənˌsɪdəˈreɪʃn/","Danh từ","Sự cân nhắc, xem xét"],["Stunning","/ˈstʌnɪŋ/","Tính từ","Tuyệt đẹp, gây ấn tượng mạnh"],["Broken","/ˈbroʊkən/","Tính từ","Hỏng, vỡ"],["Last-minute","/ˌlæst ˈmɪnɪt/","Tính từ","Phút chót"],["Alternate","/ˈɔːltərnət/","Tính từ","Xen kẽ, luân phiên, thay thế"],["Day off","/deɪ ɔːf/","Danh từ","Ngày nghỉ"],["New hire","/nuː haɪər/","Danh từ","Nhân viên mới"],["Depart","/dɪˈpɑːrt/","Động từ","Khởi hành"],["Eligible","/ˈelɪdʒəbl/","Tính từ","Đủ tư cách, đủ điều kiện"],["Claim","/kleɪm/","Động từ","Yêu cầu, đòi hỏi (quyền lợi)"],["Understaffed","/ˌʌndərˈstæft/","Tính từ","Thiếu nhân sự"],["Policy","/ˈpɑːləsi/","Danh từ","Chính sách"],["Operate","/ˈɑːpəreɪt/","Động từ","Vận hành"],["Reassurance","/ˌriːəˈʃʊrəns/","Danh từ","Sự trấn an, cam đoan"],["Intend","/ɪnˈtend/","Động từ","Có ý định, dự định"],["Moderately","/ˈmɑːdərətli/","Trạng từ","Một cách vừa phải"],["Traditional","/trəˈdɪʃənl/","Tính từ","Truyền thống"],["Archive","/ˈɑːrkaɪv/","Danh từ","Kho lưu trữ, tài liệu lưu trữ"],["Decline","/dɪˈklaɪn/","Danh từ","Sự sụt giảm"],["Remote","/rɪˈmoʊt/","Tính từ","Từ xa, hẻo lánh"],["Insufficient","/ˌɪnsəˈfɪʃnt/","Tính từ","Không đủ, thiếu"],["Damaged","/ˈdæmɪdʒd/","Tính từ","Bị hư hỏng"],["Freight","/freɪt/","Danh từ","Hàng hóa chuyên chở"],["Act","/ækt/","Động từ","Diễn xuất, hành động"],["Temporary","/ˈtempəreri/","Tính từ","Tạm thời"],["Doorway","/ˈdɔːrweɪ/","Danh từ","Cửa ra vào"],["Public","/ˈpʌblɪk/","Tính từ/danh từ","Công cộng, công chúng"],["Exceed","/ɪkˈsiːd/","Động từ","Vượt quá"],["Visualization","/ˌvɪʒuələˈzeɪʃn/","Danh từ","Sự hình dung, trực quan hóa"],["Corporation","/ˌkɔːrpəˈreɪʃn/","Danh từ","Tập đoàn, công ty kinh doanh"],["Practical","/ˈpræktɪkl/","Tính từ","Thực tế, thiết thực"],["Attendant","/əˈtendənt/","Danh từ","Người phục vụ, tiếp viên"],["Revenue","/ˈrevənuː/","Danh từ","Doanh thu, lợi nhuận"],["Award-winning","/əˈwɔːrd wɪnɪŋ/","Tính từ","Từng đoạt giải thưởng"],["Memorable","/ˈmemərəbl/","Tính từ","Đáng nhớ"],["Compatible","/kəmˈpætəbl/","Tính từ","Tương thích"],["Lower","/ˈloʊər/","Động từ","Hạ thấp, giảm"],["Quarter","/ˈkwɔːrtər/","Danh từ","Quý (thời gian), một phần tư"],["Shore","/ʃɔːr/","Danh từ","Bờ biển"],["Publicize","/ˈpʌblɪsaɪz/","Động từ","Công khai, quảng bá"],["Connection","/kəˈnekʃn/","Danh từ","Sự kết nối"],["Enthusiasm","/ɪnˈθuːziæzəm/","Danh từ","Sự nhiệt tình"],["Consider","/kənˈsɪdər/","Động từ","Cân nhắc, xem xét"],["Stroll","/stroʊl/","Động từ","Đi dạo"],["Steady","/ˈstedi/","Tính từ","Ổn định, đều đặn"],["Customized","/ˈkʌstəmaɪzd/","Tính từ","Tùy chỉnh (theo yêu cầu)"],["Consignment","/kənˈsaɪnmənt/","Danh từ","Hàng ký gửi, lô hàng"],["Renew","/rɪˈnuː/","Động từ","Gia hạn, làm mới"],["Resist","/rɪˈzɪst/","Động từ","Kháng cự, chịu đựng"],["Lodging","/ˈlɑːdʒɪŋ/","Danh từ","Nơi ở tạm thời, chỗ trọ"],["Meet","/miːt/","Động từ","Đáp ứng, thỏa mãn (yêu cầu)"],["Get rid of","/ɡet rɪd əv/","Cụm động từ","Loại bỏ"],["Protective","/prəˈtektɪv/","Tính từ","Bảo vệ"],["Enrollment","/ɪnˈroʊlmənt/","Danh từ","Sự ghi danh, đăng ký nhập học"],["Bin","/bɪn/","Danh từ","Thùng chứa"],["Respond","/rɪˈspɑːnd/","Động từ","Phản hồi, đáp lại"],["Notification","/ˌnoʊtɪfɪˈkeɪʃn/","Danh từ","Thông báo"],["Harvest","/ˈhɑːrvɪst/","Danh từ","Vụ thu hoạch"],["Durability","/ˌdʊrəˈbɪləti/","Danh từ","Độ bền"],["Demonstration","/ˌdemənˈstreɪʃn/","Danh từ","Sự minh họa, cuộc biểu tình, sự thể hiện"],["Tactile","/ˈtæktl/","Tính từ","Thuộc về xúc giác"],["Invention","/ɪnˈvenʃn/","Danh từ","Phát minh, sáng chế"],["Comfortable","/ˈkʌmftəbl/","Tính từ","Thoải mái"],["Exclusive","/ɪkˈskluːsɪv/","Tính từ","Độc quyền"],["Take advantage of","/teɪk ədˈvæntɪdʒ əv/","Cụm động từ","Tận dụng, lợi dụng"],["Bulk","/bʌlk/","Danh từ","Số lượng lớn"],["Rough","/rʌf/","Tính từ","Gồ ghề, thô ráp"],["Doubtful","/ˈdaʊtfl/","Tính từ","Nghi ngờ"],["Extract","/ˈekstrækt/","Danh từ","Chiết xuất, đoạn trích"],["Inquire","/ɪnˈkwaɪər/","Động từ","Hỏi thăm, tìm hiểu"],["Liability","/ˌlaɪəˈbɪləti/","Danh từ","Trách nhiệm pháp lý"],["Resident","/ˈrezɪdənt/","Danh từ","Cư dân"],["Deactivation","/diːˌæktɪˈveɪʃn/","Danh từ","Sự hủy kích hoạt, ngừng hoạt động"],["Procedure","/prəˈsiːdʒər/","Danh từ","Quy trình, thủ tục"],["Fate","/feɪt/","Danh từ","Định mệnh, số phận"],["Encourage","/ɪnˈkɜːrɪdʒ/","Động từ","Khuyến khích, động viên"],["Refund","/ˈriːfʌnd/","Danh từ","Tiền hoàn lại"],["Strategy","/ˈstrætədʒi/","Danh từ","Chiến lược"],["Commission","/kəˈmɪʃn/","Động từ","Ủy nhiệm, đặt làm"],["Performance","/pərˈfɔːrməns/","Danh từ","Hiệu suất, thành tích"],["Material","/məˈtɪriəl/","Danh từ","Tài liệu, vật liệu"],["Pleasure","/ˈpleʒər/","Danh từ","Niềm vui, sự hài lòng"],["Simultaneously","/ˌsaɪmlˈteɪniəsli/","Trạng từ","Đồng thời"],["Extremely","/ɪkˈstriːmli/","Trạng từ","Vô cùng, cực độ"],["Approach","/əˈproʊtʃ/","Động từ","Tiếp cận"],["Anecdote","/ˈænɪkdoʊt/","Danh từ","Giai thoại, chuyện vặt"],["Apply for","/əˈplaɪ fɔːr/","Cụm động từ","Nộp đơn, ứng tuyển"],["Degree","/dɪˈɡriː/","Danh từ","Độ (nhiệt độ), bằng cấp"],["Handle","/ˈhændl/","Động từ","Xử lý, giải quyết"],["Estimate","/ˈestɪmeɪt/","Động từ","Ước tính, báo giá"],["Intricate","/ˈɪntrɪkət/","Tính từ","Phức tạp, rắc rối"],["Previously","/ˈpriːviəsli/","Trạng từ","Trước đây"],["Compliment","/ˈkɑːmplɪmənt/","Danh từ","Lời khen ngợi"],["Finance","/ˈfaɪnæns/","Danh từ","Tài chính"],["Subcompact","/ˌsʌbˈkɑːmpækt/","Danh từ","Xe ô tô cỡ nhỏ"],["Restoration","/ˌrestəˈreɪʃn/","Danh từ","Sự phục hồi, trùng tu"],["Facility","/fəˈsɪləti/","Danh từ","Cơ sở vật chất"],["Traffic","/ˈtræfɪk/","Danh từ","Giao thông, xe cộ"],["Demolition","/ˌdeməˈlɪʃn/","Danh từ","Sự phá dỡ"],["At no charge","/ət noʊ tʃɑːrdʒ/","Cụm từ","Miễn phí"],["Overdue","/ˌoʊvərˈduː/","Tính từ","Quá hạn, chậm trễ"],["Cover letter","/ˈkʌvər letər/","Danh từ","Thư xin việc"],["In charge of","/ɪn tʃɑːrdʒ əv/","Cụm từ","Chịu trách nhiệm"],["Striped","/straɪpt/","Tính từ","Có sọc, vằn"],["Discontinue","/ˌdɪskənˈtɪnjuː/","Động từ","Ngừng, gián đoạn"],["Anticipate","/ænˈtɪsɪpeɪt/","Động từ","Dự đoán, mong đợi"],["Unusual","/ʌnˈjuːʒuəl/","Tính từ","Bất thường, hiếm"],["Assign","/əˈsaɪn/","Động từ","Phân công, chỉ định"],["Sufficient","/səˈfɪʃnt/","Tính từ","Đủ"],["Custom","/ˈkʌstəm/","Tính từ","Tùy chỉnh, đặt làm riêng"],["Asset","/ˈæset/","Danh từ","Tài sản, vốn quý"],["Attract","/əˈtrækt/","Động từ","Thu hút"],["Comply with","/kəmˈplaɪ wɪð/","Cụm động từ","Tuân thủ"],["Wholesaler","/ˈhoʊlseɪlər/","Danh từ","Nhà bán buôn"],["Household","/ˈhaʊshoʊld/","Danh từ","Hộ gia đình"],["Significantly","/sɪɡˈnɪfɪkəntli/","Trạng từ","Đáng kể, một cách ý nghĩa"],["Flowerpot","/ˈflaʊərpɑːt/","Danh từ","Chậu hoa"],["Collapsible","/kəˈlæpsəbl/","Tính từ","Có thể gấp gọn"],["Covered","/ˈkʌvərd/","Tính từ","Có mái che, được bao phủ"],["Develop","/dɪˈveləp/","Động từ","Phát triển"],["Amenity","/əˈmenəti/","Danh từ","Tiện nghi"],["Primarily","/praɪˈmerəli/","Trạng từ","Chủ yếu, chính"],["Aboard","/əˈbɔːrd/","Trạng từ","Trên tàu, trên xe"],["Mingle","/ˈmɪŋɡl/","Động từ","Hòa nhập, trộn lẫn"],["Informational","/ˌɪnfərˈmeɪʃənl/","Tính từ","Cung cấp thông tin"],["Keep fit","/kiːp fɪt/","Cụm động từ","Giữ dáng, duy trì sức khỏe"],["Installation","/ˌɪnstəˈleɪʃn/","Danh từ","Sự lắp đặt"],["Figure","/ˈfɪɡjər/","Danh từ","Số liệu, con số"],["Astronomy","/əˈstrɑːnəmi/","Danh từ","Thiên văn học"],["Receipt","/rɪˈsiːt/","Danh từ","Hóa đơn, biên lai"],["Border","/ˈbɔːrdər/","Động từ","Tiếp giáp, bao quanh"],["Backdrop","/ˈbækdrɑːp/","Danh từ","Phông nền, bối cảnh"],["Form","/fɔːrm/","Danh từ","Mẫu đơn, hình thức"],["Questionnaire","/ˌkwestʃəˈner/","Danh từ","Bảng câu hỏi"],["Quaint","/kweɪnt/","Tính từ","Độc đáo, cổ kính, lạ mắt"],["Adjournment","/əˈdʒɜːrnmənt/","Danh từ","Sự hoãn lại, bế mạc (cuộc họp)"],["Spearhead","/ˈspɪrhed/","Động từ","Dẫn đầu, tiên phong"],["Lease","/liːs/","Danh từ","Hợp đồng thuê"],["Brief","/briːf/","Tính từ","Ngắn gọn"],["Wildlife","/ˈwaɪldlaɪf/","Danh từ","Động vật hoang dã"],["Recognize","/ˈrekəɡnaɪz/","Động từ","Công nhận, nhận ra"],["Mixture","/ˈmɪkstʃər/","Danh từ","Hỗn hợp"],["Perimeter","/pəˈrɪmɪtər/","Danh từ","Chu vi, vành đai"],["Deposit","/dɪˈpɑːzɪt/","Danh từ","Tiền đặt cọc"],["Electronically","/ɪˌlekˈtrɑːnɪkli/","Trạng từ","Bằng điện tử, qua mạng"],["Walkway","/ˈwɔːkweɪ/","Danh từ","Lối đi bộ"],["Ingredient","/ɪnˈɡriːdiənt/","Danh từ","Nguyên liệu, thành phần"],["Illustrator","/ˈɪləstreɪtər/","Danh từ","Họa sĩ minh họa"],["Access","/ˈækses/","Động từ","Sự truy cập / Truy cập"],["Residential","/ˌrezɪˈdenʃl/","Tính từ","Thuộc khu dân cư, cư trú"],["Managerial","/ˌmænəˈdʒɪriəl/","Tính từ","Thuộc về quản lý"],["Society","/səˈsaɪəti/","Danh từ","Xã hội, hiệp hội"],["Disruption","/dɪsˈrʌpʃn/","Danh từ","Sự gián đoạn"],["Authority","/əˈθɔːrəti/","Danh từ","Thẩm quyền, nhà chức trách"],["Describe","/dɪˈskraɪb/","Động từ","Mô tả"],["Convey","/kənˈveɪ/","Động từ","Truyền tải (suy nghĩ, cảm xúc, ý tưởng)"],["Railing","/ˈreɪlɪŋ/","Danh từ","Lan can"],["Correction","/kəˈrekʃn/","Danh từ","Sự sửa chữa, hiệu chỉnh"],["Summary","/ˈsʌməri/","Danh từ","Bản tóm tắt"],["Bookkeeping","/ˈbʊkkiːpɪŋ/","Danh từ","Công việc kế toán, ghi chép sổ sách"],["Caterer","/ˈkeɪtərər/","Danh từ","Nhà cung cấp dịch vụ ăn uống"],["Negotiate","/nɪˈɡoʊʃieɪt/","Động từ","Đàm phán, thương lượng"],["Security","/səˈkjʊrəti/","Danh từ","An ninh, sự bảo đảm"],["Headquarters","/ˈhedkwɔːrtərz/","Danh từ","Trụ sở chính"],["Unusually","/ʌnˈjuːʒuəli/","Trạng từ","Khác thường, hiếm thấy"],["Advanced","/ədˈvænst/","Tính từ","Tiên tiến, cao cấp"],["Credible","/ˈkredəbl/","Tính từ","Đáng tin cậy"],["Confirmation","/ˌkɑːnfərˈmeɪʃn/","Danh từ","Sự xác nhận"],["Weigh","/weɪ/","Động từ","Cân, có trọng lượng"],["Deboard","/diːˈbɔːrd/","Động từ","Xuống (xe, tàu, máy bay)"],["Supervise","/ˈsuːpərvaɪz/","Động từ","Giám sát"],["Local","/ˈloʊkl/","Tính từ","Thuộc địa phương"],["Avoid","/əˈvɔɪd/","Động từ","Tránh"],["Appreciate","/əˈpriːʃieɪt/","Động từ","Cảm kích, đánh giá cao"],["Assess","/əˈses/","Động từ","Đánh giá"],["Promise","/ˈprɑːmɪs/","Danh từ/động…","Hứa hẹn, có triển vọng / Lời hứa"],["Valid","/ˈvælɪd/","Tính từ","Có hiệu lực"],["Rebook","/ˌriːˈbʊk/","Động từ","Đặt lại (vé, chỗ)"],["Informative","/ɪnˈfɔːrmətɪv/","Tính từ","Cung cấp nhiều tin tức, hữu ích"],["Ongoing","/ˈɑːnɡoʊɪŋ/","Tính từ","Đang diễn ra, liên tục"],["Figure out","/ˈfɪɡjər aʊt/","Cụm động từ","Tìm ra, hiểu ra"],["Forefront","/ˈfɔːrfrʌnt/","Danh từ","Hàng đầu, đi đầu"],["Disclose","/dɪsˈkloʊz/","Động từ","Tiết lộ, vạch trần"],["Status","/ˈsteɪtəs/","Danh từ","Trạng thái, địa vị"],["Advertise","/ˈædvərtaɪz/","Động từ","Quảng cáo"],["Go toward","/ɡoʊ təˈwɔːrd/","Cụm động từ","Được dùng cho, đóng góp vào"],["Crease","/kriːs/","Động từ","Làm nhăn"],["Shrink","/ʃrɪŋk/","Động từ","Co lại, rút ngắn"],["Vehicle","/ˈviːəkl/","Danh từ","Xe cộ, phương tiện"],["Reduce","/rɪˈduːs/","Động từ","Giảm bớt"],["Participation","/pɑːrˌtɪsɪˈpeɪʃn/","Danh từ","Sự tham gia"],["Colleague","/ˈkɑːliːɡ/","Danh từ","Đồng nghiệp"],["Fluency","/ˈfluːənsi/","Danh từ","Sự lưu loát, trôi chảy"],["Theme","/θiːm/","Danh từ","Chủ đề"],["Aspect","/ˈæspekt/","Danh từ","Khía cạnh"],["Luncheon","/ˈlʌntʃən/","Danh từ","Tiệc trưa"],["Subsequent","/ˈsʌbsɪkwənt/","Tính từ","Đến sau, theo sau"],["Question","/ˈkwestʃən/","Động từ","Nghi ngờ, chất vấn"],["Publicity","/pʌbˈlɪsəti/","Danh từ","Sự quảng bá, công khai"],["List","/lɪst/","Động từ","Liệt kê, ghi vào danh sách"],["Founder","/ˈfaʊndər/","Danh từ","Người sáng lập"],["Direct","/dəˈrekt/","Động từ","Hướng dẫn, chỉ đường"],["Testimonial","/ˌtestɪˈmoʊniəl/","Danh từ","Giấy chứng nhận, lời khen ngợi (từ khách hàng)"],["Appointment","/əˈpɔɪntmənt/","Danh từ","Cuộc hẹn, sự bổ nhiệm"],["Brochure","/broʊˈʃʊr/","Danh từ","Tờ rơi, sách quảng cáo"],["Yield","/jiːld/","Danh từ","Sản lượng"],["Pursue","/pərˈsuː/","Động từ","Theo đuổi"],["Nourish","/ˈnɜːrɪʃ/","Động từ","Nuôi dưỡng"],["Due","/duː/","Tính từ","Đến hạn"],["Joint","/dʒɔɪnt/","Tính từ","Chung, cùng nhau"],["Fit","/fɪt/","Động từ","Vừa vặn, phù hợp"],["Straightforward","/ˌstreɪtˈfɔːrwərd/","Tính từ","Thẳng thắn, dễ hiểu"],["Opening","/ˈoʊpnɪŋ/","Danh từ","Vị trí trống (việc làm), lễ khai trương"],["Sealant","/ˈsiːlənt/","Danh từ","Chất trám kín"],["Waive","/weɪv/","Động từ","Từ bỏ, miễn (phí)"],["Positive","/ˈpɑːzətɪv/","Tính từ","Tích cực"],["Explore","/ɪkˈsplɔːr/","Động từ","Khám phá, thăm dò"],["Bill","/bɪl/","Danh từ","Hóa đơn"],["Durable","/ˈdʊrəbl/","Tính từ","Bền, lâu bền"],["Versatile","/ˈvɜːrsətl/","Tính từ","Đa năng, linh hoạt"],["Board","/bɔːrd/","Động từ","Lên tàu, lên xe"],["Repair","/rɪˈper/","Động từ","Sửa chữa"],["Criteria","/kraɪˈtɪriə/","Danh từ","Tiêu chí"],["Take place","/teɪk pleɪs/","Cụm động từ","Diễn ra, được tổ chức"],["Instrumental","/ˌɪnstrəˈmentl/","Tính từ","Thiết yếu, góp phần lớn"],["Negotiation","/nɪˌɡoʊʃiˈeɪʃn/","Danh từ","Sự đàm phán, thương lượng"],["Post","/poʊst/","Động từ","Đăng tải, niêm yết"],["Expedition","/ˌekspəˈdɪʃn/","Danh từ","Cuộc thám hiểm"],["Onboarding","/ˈɑːnbɔːrdɪŋ/","Danh từ","Quy trình nhập môn (cho nhân viên mới)"],["Freezing","/ˈfriːzɪŋ/","Tính từ","Lạnh giá, đóng băng"],["Transfer","/trænsˈfɜːr/","Động từ","Chuyển, thuyên chuyển"],["Indoors","/ˌɪnˈdɔːrz/","Trạng từ","Ở trong nhà"],["Excel","/ɪkˈsel/","Động từ","Xuất sắc, vượt trội"],["Deserve","/dɪˈzɜːrv/","Động từ","Xứng đáng"],["Set up","/set ʌp/","Cụm động từ","Thiết lập, sắp xếp"],["Certified","/ˈsɜːrtɪfaɪd/","Tính từ","Được chứng nhận"],["Payroll","/ˈpeɪroʊl/","Danh từ","Bảng lương, việc trả lương"],["Definitely","/ˈdefɪnətli/","Trạng từ","Chắc chắn"],["Shorten","/ˈʃɔːrtn/","Động từ","Rút ngắn"],["Reschedule","/ˌriːˈskedʒuːl/","Động từ","Sắp xếp lại lịch"],["Gathering","/ˈɡæðərɪŋ/","Danh từ","Buổi tụ họp, cuộc gặp mặt"],["Unintentionally","/ˌʌnɪnˈtenʃənəli/","Trạng từ","Vô tình, không chủ ý"],["Nominate","/ˈnɑːmɪneɪt/","Động từ","Đề cử"],["Designated","/ˈdezɪɡneɪtɪd/","Tính từ","Được chỉ định"],["Knowledgeable","/ˈnɑːlɪdʒəbl/","Tính từ","Am hiểu, có kiến thức"],["Donate","/ˈdoʊneɪt/","Động từ","Quyên góp"],["Persist","/pərˈsɪst/","Động từ","Kiên trì, tiếp diễn"],["Sustainable","/səˈsteɪnəbl/","Tính từ","Bền vững"],["Management","/ˈmænɪdʒmənt/","Danh từ","Ban quản lý, sự quản lý"],["Proceed","/prəˈsiːd/","Động từ","Tiến hành, tiếp tục"],["Benefits","/ˈbenɪfɪts/","Danh từ","Phúc lợi, lợi ích"],["Pedestrian","/pəˈdestriən/","Danh từ","Người đi bộ"],["Favorable","/ˈfeɪvərəbl/","Tính từ","Thuận lợi"],["Intensive","/ɪnˈtensɪv/","Tính từ","Tập trung, chuyên sâu"],["Commend","/kəˈmend/","Động từ","Khen ngợi, ca ngợi"],["Align","/əˈlaɪn/","Động từ","Căn chỉnh, sắp hàng"],["Representative","/ˌreprɪˈzentətɪv/","Danh từ","Người đại diện"],["Triumph","/ˈtraɪʌmf/","Danh từ","Chiến thắng, thành tựu lớn"],["Resource","/ˈriːsɔːrs/","Danh từ","Tài nguyên, nguồn lực"],["Accommodate","/əˈkɑːmədeɪt/","Động từ","Đáp ứng, cung cấp chỗ ở"],["Varied","/ˈverid/","Tính từ","Đa dạng"],["Inquiry","/ˈɪnkwəri/","Danh từ","Sự thắc mắc, câu hỏi"],["Aim","/eɪm/","Động từ","Nhắm tới, mục tiêu"],["Crucially","/ˈkruːʃəli/","Trạng từ","Một cách quyết định, quan trọng"],["Maintenance","/ˈmeɪntənəns/","Danh từ","Sự bảo trì"],["Recreation","/ˌrekriˈeɪʃn/","Danh từ","Sự giải trí, tiêu khiển"],["Temporarily","/ˌtempəˈrerəli/","Trạng từ","Tạm thời"],["Take down","/teɪk daʊn/","Cụm động từ","Tháo dỡ"],["Dedicate","/ˈdedɪkeɪt/","Động từ","Cống hiến, dành cho"],["Retirement","/rɪˈtaɪərmənt/","Danh từ","Sự nghỉ hưu"],["Optimal","/ˈɑːptɪml/","Tính từ","Tối ưu"],["Research","/rɪˈsɜːrtʃ/","Danh từ","Nghiên cứu"],["Researcher","/ˈriːsɜːrtʃər/","Danh từ","Nhà nghiên cứu"],["Thrive","/θraɪv/","Động từ","Phát triển mạnh, thịnh vượng"],["Initial","/ɪˈnɪʃl/","Tính từ","Ban đầu"],["Admire","/ədˈmaɪər/","Động từ","Ngưỡng mộ, khâm phục"],["Resolve","/rɪˈzɑːlv/","Động từ","Giải quyết"],["Validate","/ˈvælɪdeɪt/","Động từ","Xác nhận, phê chuẩn"],["Overtime","/ˈoʊvərtaɪm/","Danh từ","Giờ làm thêm"],["Substance","/ˈsʌbstəns/","Danh từ","Chất, vật chất"],["Hectic","/ˈhektɪk/","Tính từ","Bận rộn, cuồng nhiệt"],["Submit","/səbˈmɪt/","Động từ","Nộp, đệ trình"],["Promptly","/ˈprɑːmptli/","Trạng từ","Ngay lập tức, đúng giờ"],["Autonomous","/ɔːˈtɑːnəməs/","Tính từ","Tự trị, tự động"],["Criticism","/ˈkrɪtɪsɪzəm/","Danh từ","Sự phê bình, chỉ trích"],["Surrounding","/səˈraʊndɪŋ/","Danh từ","Môi trường xung quanh"],["Conservation","/ˌkɑːnsərˈveɪʃn/","Danh từ","Sự bảo tồn"],["Editorial","/ˌedɪˈtɔːriəl/","Tính từ","Thuộc biên tập"],["Expertise","/ˌekspɜːrˈtiːz/","Danh từ","Chuyên môn, kiến thức chuyên sâu"],["Reasonably","/ˈriːznəbli/","Trạng từ","Một cách hợp lý, khá là"],["Container","/kənˈteɪnər/","Danh từ","Thùng chứa, đồ đựng"],["Accurate","/ˈækjərət/","Tính từ","Chính xác"],["Virtual","/ˈvɜːrtʃuəl/","Tính từ","Ảo (trên mạng)"],["Commitment","/kəˈmɪtmənt/","Danh từ","Sự cam kết, tận tụy"],["Beautify","/ˈbjuːtɪfaɪ/","Động từ","Làm đẹp, tô điểm"],["Negative","/ˈneɡətɪv/","Tính từ","Tiêu cực"],["Condition","/kənˈdɪʃn/","Danh từ","Điều kiện, tình trạng"],["Scatter","/ˈskætər/","Động từ","Rải rác, phân tán"],["Dock","/dɑːk/","Động từ","Cập bến"],["Functional","/ˈfʌŋkʃənl/","Tính từ","Thiết thực, hoạt động tốt"],["Intrigue","/ɪnˈtriːɡ/","Động từ","Gợi thích thú, hấp dẫn"],["Former","/ˈfɔːrmər/","Tính từ","Cựu, trước đây"],["Secluded","/sɪˈkluːdɪd/","Tính từ","Hẻo lánh, yên tĩnh"],["Launch","/lɔːntʃ/","Danh từ","Sự ra mắt, khai trương"],["Inspect","/ɪnˈspekt/","Động từ","Kiểm tra, thanh tra"],["Adjoining","/əˈdʒɔɪnɪŋ/","Tính từ","Kế bên, liền kề"],["Forthcoming","/ˌfɔːrθˈkʌmɪŋ/","Tính từ","Sắp tới"],["Candid","/ˈkændɪd/","Tính từ","Thẳng thắn, thật thà"],["Reservation","/ˌrezərˈveɪʃn/","Danh từ","Sự đặt chỗ"],["Modification","/ˌmɑːdɪfɪˈkeɪʃn/","Danh từ","Sự sửa đổi"],["Review","/rɪˈvjuː/","Động từ","Xem xét, đánh giá"],["Inspection","/ɪnˈspekʃn/","Danh từ","Sự kiểm tra, thanh tra"],["Elect","/ɪˈlekt/","Động từ","Bầu cử"],["Morale","/məˈræl/","Danh từ","Tinh thần, nhuệ khí"],["Savour","/ˈseɪvər/","Động từ","Thưởng thức, tận hưởng"],["Mayor","/ˈmeɪər/","Danh từ","Thị trưởng"],["Minutes","/ˈmɪnɪts/","Danh từ","Biên bản cuộc họp"],["Outline","/ˈaʊtlaɪn/","Động từ","Phác thảo, vạch ra"],["Relieved","/rɪˈliːvd/","Tính từ","An tâm, nhẹ nhõm"],["Concern","/kənˈsɜːrn/","Danh từ","Mối quan tâm, lo ngại"],["Participate in","/pɑːrˈtɪsɪpeɪt ɪn/","Cụm động từ","Tham gia vào"],["Alert","/əˈlɜːrt/","Danh từ","Sự báo động, cảnh báo"],["Ignore","/ɪɡˈnɔːr/","Động từ","Phớt lờ"],["Laboratory","/ˈlæbrətɔːri/","Danh từ","Phòng thí nghiệm"],["Comprehensive","/ˌkɑːmprɪˈhensɪv/","Tính từ","Toàn diện, bao quát"],["Apparel","/əˈpærəl/","Danh từ","Y phục, quần áo"],["Competent","/ˈkɑːmpɪtənt/","Tính từ","Có năng lực, thạo việc"],["Replace","/rɪˈpleɪs/","Động từ","Thay thế"],["Currently","/ˈkɜːrəntli/","Trạng từ","Hiện tại"],["Commercial","/kəˈmɜːrʃl/","Tính từ","Thuộc thương mại"],["Associate","/əˈsoʊsieɪt/","Danh từ","Cộng sự, nhân viên"],["District","/ˈdɪstrɪkt/","Danh từ","Quận, khu vực"],["Intrigued","/ɪnˈtriːɡd/","Tính từ","Hứng thú, tò mò"],["Signature","/ˈsɪɡnətʃər/","Danh từ","Chữ ký"],["Industrial","/ɪnˈdʌstriəl/","Tính từ","Thuộc công nghiệp"],["Overcome","/ˌoʊvərˈkʌm/","Động từ","Vượt qua, khắc phục"],["Heritage","/ˈherɪtɪdʒ/","Danh từ","Di sản"],["Completion","/kəmˈpliːʃn/","Danh từ","Sự hoàn thành"],["Groceries","/ˈɡroʊsəriz/","Danh từ","Hàng tạp hóa, thực phẩm"],["Rush","/rʌʃ/","Tính từ","Vội vàng, gấp"],["Gauge","/ɡeɪdʒ/","Động từ","Đo lường, đánh giá"],["Aesthetic","/esˈθetɪk/","Tính từ","Thuộc về thẩm mỹ"],["Personality","/ˌpɜːrsəˈnæləti/","Danh từ","Tính cách, nhân phẩm"],["Astronaut","/ˈæstrənɔːt/","Danh từ","Phi hành gia"],["Responsive","/rɪˈspɑːnsɪv/","Tính từ","Phản hồi nhanh, nhiệt tình"],["Hand","/hænd/","Động từ","Trao tay, đưa"],["Motivate","/ˈmoʊtɪveɪt/","Động từ","Thúc đẩy, tạo động lực"],["Vendor","/ˈvendər/","Danh từ","Nhà cung cấp, người bán hàng"],["Recurring","/rɪˈkɜːrɪŋ/","Tính từ","Định kỳ, lặp lại"],["Manuscript","/ˈmænjuskrɪpt/","Danh từ","Bản thảo"],["Competitive","/kəmˈpetətɪv/","Tính từ","Có tính cạnh tranh"],["Pass","/pæs/","Danh từ","Thẻ ra vào, vé"],["Proactive","/proʊˈæktɪv/","Tính từ","Chủ động"],["Enclose","/ɪnˈkloʊz/","Động từ","Đính kèm, gửi kèm"],["Increase","/ɪnˈkriːs/","Động từ","Tăng lên"],["Officially","/əˈfɪʃəli/","Trạng từ","Một cách chính thức"],["Appear","/əˈpɪr/","Động từ","Xuất hiện"],["Present","/ˈpreznt/","Tính từ","Hiện tại"],["Incorporate","/ɪnˈkɔːrpəreɪt/","Động từ","Kết hợp, sáp nhập"],["Job opening","/dʒɑːb ˈoʊpnɪŋ/","Danh từ","Vị trí việc làm trống"],["Catch up","/kætʃ ʌp/","Cụm động từ","Bắt kịp"],["Compliance","/kəmˈplaɪəns/","Danh từ","Sự tuân thủ"],["In time","/ɪn taɪm/","Cụm từ","Kịp giờ, đúng lúc"],["Advertising","/ˈædvərtaɪzɪŋ/","Danh từ","Ngành quảng cáo, hoạt động quảng cáo"],["Exit","/ˈeksɪt/","Động từ","Thoát ra, đi ra"],["Retail","/ˈriːteɪl/","Danh từ","Bán lẻ"],["Assure","/əˈʃʊr/","Động từ","Đảm bảo, cam đoan"],["Adjust","/əˈdʒʌst/","Động từ","Điều chỉnh"],["Talented","/ˈtæləntɪd/","Tính từ","Tài năng"],["Fictional","/ˈfɪkʃənl/","Tính từ","Hư cấu"],["Unnecessary","/ʌnˈnesəseri/","Tính từ","Không cần thiết"],["Stationery","/ˈsteɪʃəneri/","Danh từ","Văn phòng phẩm"],["Attention","/əˈtenʃn/","Danh từ","Sự chú ý"],["Feedback","/ˈfiːdbæk/","Danh từ","Phản hồi, ý kiến"],["First aid","/ˌfɜːrst ˈeɪd/","Danh từ","Sơ cứu"],["Curious","/ˈkjʊriəs/","Tính từ","Tò mò, hiếu kỳ"],["Inconvenient","/ˌɪnkənˈviːniənt/","Tính từ","Bất tiện"],["Guideline","/ˈɡaɪdlaɪn/","Danh từ","Hướng dẫn, chỉ đạo"],["Attractive","/əˈtræktɪv/","Tính từ","Hấp dẫn, thu hút"],["Fulfillment","/fʊlˈfɪlmənt/","Danh từ","Sự hoàn thành, đáp ứng"],["Incomplete","/ˌɪnkəmˈpliːt/","Tính từ","Chưa hoàn thành, thiếu"],["Unfavorable","/ʌnˈfeɪvərəbl/","Tính từ","Bất lợi, không thuận lợi"],["Restore","/rɪˈstɔːr/","Động từ","Khôi phục, phục hồi"],["Dimension","/dɪˈmenʃn/","Danh từ","Kích thước, chiều (không gian)"],["Landscaping","/ˈlændskeɪpɪŋ/","Danh từ","Cảnh quan, sự làm đẹp cảnh quan"],["Attempt","/əˈtempt/","Động từ","Cố gắng"],["Statement","/ˈsteɪtmənt/","Danh từ","Sao kê, bản tuyên bố"],["Deduct","/dɪˈdʌkt/","Động từ","Khấu trừ"],["Persistent","/pərˈsɪstənt/","Tính từ","Kiên trì, dai dẳng"],["Supervisor","/ˈsuːpərvaɪzər/","Danh từ","Người giám sát, cấp trên"],["Flavourful","/ˈfleɪvərfl/","Tính từ","Đậm đà hương vị"],["Challenging","/ˈtʃælɪndʒɪŋ/","Tính từ","Đầy thách thức, khó khăn"],["Conserve","/kənˈsɜːrv/","Động từ","Bảo tồn, tiết kiệm"],["Subsequently","/ˈsʌbsɪkwəntli/","Trạng từ","Sau đó"],["Harmful","/ˈhɑːrmfl/","Tính từ","Có hại"],["Enable","/ɪˈneɪbl/","Động từ","Cho phép, làm cho có thể"],["Garment","/ˈɡɑːrmənt/","Danh từ","Quần áo, y phục"],["Combine","/kəmˈbaɪn/","Động từ","Kết hợp"],["Encouragement","/ɪnˈkɜːrɪdʒmənt/","Danh từ","Sự khích lệ"],["Retrieve","/rɪˈtriːv/","Động từ","Lấy lại, khôi phục"],["Roughly","/ˈrʌfli/","Trạng từ","Khoảng, xấp xỉ"],["Critical","/ˈkrɪtɪkl/","Tính từ","Quan trọng, phê bình"],["Justify","/ˈdʒʌstɪfaɪ/","Động từ","Biện minh, chứng minh là đúng"],["Agreement","/əˈɡriːmənt/","Danh từ","Hợp đồng, thỏa thuận"],["Details","/ˈdiːteɪlz/","Danh từ","Chi tiết, thông tin cụ thể"],["Operation","/ˌɑːpəˈreɪʃn/","Danh từ","Sự vận hành, hoạt động"],["Insightful","/ˈɪnsaɪtfl/","Tính từ","Sâu sắc, đầy sự thấu hiểu"],["Preference","/ˈprefrəns/","Danh từ","Sự ưu tiên, sở thích"],["Capacity","/kəˈpæsəti/","Danh từ","Sức chứa, năng lực"],["Subordinate","/səˈbɔːrdɪnət/","Danh từ","Cấp dưới"],["Exchange","/ɪksˈtʃeɪndʒ/","Động từ","Trao đổi"],["Empty","/ˈempti/","Động từ","Làm trống, đổ (rác)"],["Cater","/ˈkeɪtər/","Động từ","Cung cấp thực phẩm, phục vụ tiệc"],["Frame","/freɪm/","Danh từ","Khung (ảnh, cửa)"],["Undoubtedly","/ʌnˈdaʊtɪdli/","Trạng từ","Không nghi ngờ gì, chắc chắn"],["Resemble","/rɪˈzembl/","Động từ","Giống với"],["Competitor","/kəmˈpetɪtər/","Danh từ","Đối thủ cạnh tranh"],["Politician","/ˌpɑːləˈtɪʃn/","Danh từ","Chính trị gia"],["Transition","/trænˈzɪʃn/","Danh từ","Sự chuyển tiếp, quá độ"],["Renovate","/ˈrenəveɪt/","Động từ","Cải tạo"],["Specification","/ˌspesɪfɪˈkeɪʃn/","Danh từ","Thông số kỹ thuật, đặc điểm"],["Depend on","/dɪˈpend ɑːn/","Cụm động từ","Phụ thuộc vào"],["Proficiency","/prəˈfɪʃnsi/","Danh từ","Sự thành thạo"],["Utilities","/juːˈtɪlətiz/","Danh từ","Tiện ích (điện, nước, gas...)"],["Outstanding","/aʊtˈstændɪŋ/","Tính từ","Xuất sắc, nổi bật, còn tồn đọng"],["Specialty","/ˈspeʃəlti/","Danh từ","Chuyên môn, đặc sản"],["Proceeds","/ˈproʊsiːdz/","Danh từ","Tiền thu được (thường dùng cho từ thiện)"],["Flavour","/ˈfleɪvər/","Danh từ","Hương vị"],["Demonstrate","/ˈdemənstreɪt/","Động từ","Chứng minh, làm mẫu, trình bày"],["Invaluable","/ɪnˈvæljuəbl/","Tính từ","Vô giá"],["Directly","/dəˈrektli/","Trạng từ","Trực tiếp"],["Imperfection","/ˌɪmpərˈfekʃn/","Danh từ","Sự không hoàn hảo, khiếm khuyết"],["Milestone","/ˈmaɪlstoʊn/","Danh từ","Cột mốc quan trọng"],["Biweekly","/ˌbaɪˈwiːkli/","Trạng từ","Hai tuần một lần"],["Outdoor","/ˈaʊtdɔːr/","Tính từ","Ngoài trời"],["Responsibility","/rɪˌspɑːnsəˈbɪləti/","Danh từ","Trách nhiệm"],["Suspension","/səˈspenʃn/","Danh từ","Sự đình chỉ, tạm ngưng"],["Found","/faʊnd/","Động từ","Thành lập"],["Municipal","/juːˈnɪsɪpl/","Tính từ","Thuộc về thành phố, đô thị"],["Diplomat","/ˈdɪpləmæt/","Danh từ","Nhà ngoại giao"],["Cultivate","/ˈkʌltɪveɪt/","Động từ","Trau dồi, canh tác"],["Contain","/kənˈteɪn/","Động từ","Chứa đựng"],["Remotely","/rɪˈmoʊtli/","Trạng từ","Từ xa"],["Enhance","/ɪnˈhæns/","Động từ","Nâng cao, tăng cường"],["Residue","/ˈrezɪduː/","Danh từ","Cặn, dư lượng"],["Tricky","/ˈtrɪki/","Tính từ","Phức tạp, khôn lanh"],["Advance","/ədˈvæns/","Tính từ","Trước, sớm (ví dụ: đặt trước)"],["Quarterly","/ˈkwɔːrtərli/","Tính từ","Hàng quý"],["Disappointment","/ˌdɪsəˈpɔɪntmənt/","Danh từ","Sự thất vọng"],["Praise","/preɪz/","Động từ","Khen ngợi"],["Argue","/ˈɑːrɡjuː/","Động từ","Tranh luận, biện luận"],["Rustic","/ˈrʌstɪk/","Tính từ","Mộc mạc, quê mùa"],["Approve","/əˈpruːv/","Động từ","Phê duyệt, chấp thuận"],["Demand","/dɪˈmænd/","Danh từ","Nhu cầu"],["Distracting","/dɪˈstræktɪŋ/","Tính từ","Gây xao nhãng, mất tập trung"],["Ancient","/ˈeɪnʃənt/","Tính từ","Cổ đại"],["Nutritional","/nuˈtrɪʃənl/","Tính từ","Thuộc về dinh dưỡng"],["Satellite","/ˈsætəlaɪt/","Danh từ","Vệ tinh"],["Availability","/əˌveɪləˈbɪləti/","Danh từ","Khả năng đáp ứng, tính sẵn có"],["Excuse","/ɪkˈskjuːs/","Danh từ","Lời bào chữa, lý do"],["Preventive","/prɪˈventɪv/","Tính từ","Mang tính phòng ngừa"],["Instructor","/ɪnˈstrʌktər/","Danh từ","Người hướng dẫn, giảng viên"],["Permanently","/ˈpɜːrmənəntli/","Trạng từ","Vĩnh viễn, lâu dài"],["Earmark","/ˈɪrmɑːrk/","Động từ","Dành riêng (ngân sách) cho mục đích cụ thể"],["Renovation","/ˌrenəˈveɪʃn/","Danh từ","Sự cải tạo, sửa chữa"],["Create","/kriˈeɪt/","Động từ","Tạo ra"],["Dedication","/ˌdedɪˈkeɪʃn/","Danh từ","Sự cống hiến"],["Sound","/saʊnd/","Tính từ","Vững chãi, có cơ sở, đúng đắn"],["Telescope","/ˈtelɪskoʊp/","Danh từ","Kính thiên văn"],["Recipient","/rɪˈsɪpiənt/","Danh từ","Người nhận"],["Complaint","/kəmˈpleɪnt/","Danh từ","Lời phàn nàn"],["Initiate","/ɪˈnɪʃieɪt/","Động từ","Khởi xướng, bắt đầu"],["Pour","/pɔːr/","Động từ","Rót, đổ"],["Immediate","/ɪˈmiːdiət/","Tính từ","Ngay lập tức"],["Input","/ˈɪnpʊt/","Danh từ","Ý kiến đóng góp"],["Prototype","/ˈproʊtətaɪp/","Danh từ","Nguyên mẫu"],["Reimbursement","/ˌriːɪmˈbɜːrsmənt/","Danh từ","Sự hoàn tiền, khoản bồi hoàn"],["Spread","/spred/","Động từ","Lan truyền, trải ra"],["Affordably","/əˈfɔːrdəbli/","Trạng từ","Với giá phải chăng"],["Knowledge","/ˈnɑːlɪdʒ/","Danh từ","Kiến thức"],["Inviting","/ɪnˈvaɪtɪŋ/","Tính từ","Lôi cuốn, hấp dẫn"],["Assemble","/əˈsembl/","Động từ","Lắp ráp, tập hợp"],["Be supposed to","/bi səˈpoʊzd tu/","Cụm động từ","Được cho là, phải"],["Multiple","/ˈmʌltɪpl/","Tính từ","Nhiều, đa dạng"],["Climb","/klaɪm/","Động từ","Leo trèo"],["Suitable","/ˈsuːtəbl/","Tính từ","Phù hợp, thích hợp"],["Vary","/ˈveri/","Động từ","Thay đổi, làm đa dạng"],["Distribution","/ˌdɪstrɪˈbjuːʃn/","Danh từ","Sự phân phối"],["Renowned","/rɪˈnaʊnd/","Tính từ","Nổi tiếng"],["Costly","/ˈkɔːstli/","Tính từ","Đắt đỏ, tốn kém"],["Mural","/ˈmjʊrəl/","Danh từ","Tranh tường"],["Organize","/ˈɔːrɡənaɪz/","Động từ","Tổ chức, sắp xếp"],["Regional","/ˈriːdʒənl/","Tính từ","Thuộc khu vực, vùng miền"],["Impressive","/ɪmˈpresɪv/","Tính từ","Ấn tượng"],["Stock","/stɑːk/","Danh từ/động…","Hàng tồn kho / Tích trữ"],["Construction","/kənˈstrʌkʃn/","Danh từ","Sự xây dựng, công trình"],["Culinary","/ˈkʌlɪneri/","Tính từ","Thuộc về ẩm thực"],["Overhead","/ˌoʊvərˈhed/","Tính từ","Ở trên đầu"],["Breach","/briːtʃ/","Danh từ","Sự vi phạm"],["Guidance","/ˈɡaɪdns/","Danh từ","Sự hướng dẫn, chỉ đạo"],["Refined","/rɪˈfaɪnd/","Tính từ","Tinh chế, tao nhã"],["Congested","/kənˈdʒestɪd/","Tính từ","Tắc nghẽn, đông nghịt"],["Storefront","/ˈstɔːrfrʌnt/","Danh từ","Mặt tiền cửa hàng"],["Proofread","/ˈpruːfriːd/","Động từ","Hiệu đính, đọc sửa"],["Entire","/ɪnˈtaɪər/","Tính từ","Toàn bộ"],["Track","/træk/","Động từ","Theo dõi"],["Constitute","/ˈkɑːnstɪtuːt/","Động từ","Cấu thành, tạo nên"],["Realty","/ˈriːəlti/","Danh từ","Bất động sản"],["Specialize in","/ˈspeʃəlaɪz ɪn/","Cụm động từ","Chuyên về"],["Statistical","/stəˈtɪstɪkl/","Tính từ","Thuộc thống kê"],["Income","/ˈɪnkʌm/","Danh từ","Thu nhập"],["Accidentally","/ˌæksɪˈdentəli/","Trạng từ","Tình cờ, ngẫu nhiên"],["Credential","/krəˈdenʃl/","Danh từ","Chứng chỉ, bằng cấp"],["Last","/læst/","Động từ","Kéo dài"],["Focus on","/ˈfoʊkəs ɑːn/","Cụm động từ","Tập trung vào"],["Unfamiliar","/ˌʌnfəˈmɪliər/","Tính từ","Không quen, lạ lẫm"],["Approval","/əˈpruːvl/","Danh từ","Sự chấp thuận"],["Complain","/kəmˈpleɪn/","Động từ","Phàn nàn, khiếu nại"],["Fabric","/ˈfæbrɪk/","Danh từ","Vải vóc"],["Domestic","/dəˈmestɪk/","Tính từ","Nội địa, trong nước"],["Boulevard","/ˈbʊləvɑːrd/","Danh từ","Đại lộ"],["Sanitize","/ˈsænɪtaɪz/","Động từ","Khử trùng, làm vệ sinh"],["Stakeholder","/ˈsteɪkhoʊldər/","Danh từ","Các bên liên quan, cổ đông"],["Practice","/ˈpræktɪs/","Danh từ","Sự thực hành, thói quen"],["A majority of","/ə məˈdʒɔːrəti əv/","Cụm từ","Đa số, phần lớn"],["Candidate","/ˈkændɪdət/","Danh từ","Ứng viên"],["Adhere","/ədˈhɪr/","Động từ","Dính chặt, tuân thủ"],["Virtually","/ˈvɜːrtʃuəli/","Trạng từ","Hầu như, một cách ảo (qua mạng)"],["Corporate","/ˈkɔːrpərət/","Tính từ","Thuộc về doanh nghiệp, công ty"],["Organization","/ˌɔːrɡənəˈzeɪʃn/","Danh từ","Tổ chức, cơ quan"],["Distance","/ˈdɪstəns/","Danh từ","Khoảng cách"],["Caution","/ˈkɔːʃn/","Danh từ","Sự thận trọng, cảnh báo"],["Machinery","/məˈʃiːnəri/","Danh từ","Máy móc"],["Unique","/juˈniːk/","Tính từ","Độc đáo"],["Fluctuation","/ˌflʌktʃuˈeɪʃn/","Danh từ","Sự biến động"],["Attune","/əˈtuːn/","Động từ","Làm cho hòa hợp"],["Unavailable","/ˌʌnəˈveɪləbl/","Tính từ","Không có sẵn, bận"],["Unfortunately","/ʌnˈfɔːrtʃənətli/","Trạng từ","Thật không may"],["Determine","/dɪˈtɜːrmɪn/","Động từ","Xác định, quyết định"],["Precondition","/ˌpriːkənˈdɪʃn/","Danh từ","Điều kiện tiên quyết"],["Finalize","/ˈfaɪnəlaɪz/","Động từ","Hoàn tất, thông qua lần cuối"],["Remind","/rɪˈmaɪnd/","Động từ","Nhắc nhở"],["Perspective","/pərˈspektɪv/","Danh từ","Quan điểm, góc nhìn"],["Cement","/sɪˈment/","Động từ","Củng cố, thắt chặt"],["Prestigious","/preˈstɪdʒəs/","Tính từ","Có uy tín, danh giá"],["Incur","/ɪnˈkɜːr/","Động từ","Gánh chịu, phát sinh (chi phí, hậu quả)"],["Guarantee","/ˌɡærənˈtiː/","Danh từ","Sự bảo đảm"],["Analyze","/ˈænəlaɪz/","Động từ","Phân tích"],["Shelf","/ʃelf/","Danh từ","Cái kệ, giá sách"],["Permission","/pərˈmɪʃn/","Danh từ","Sự cho phép"],["Recipe","/ˈresəpi/","Danh từ","Công thức nấu ăn"],["Release","/rɪˈliːs/","Động từ","Phát hành, tung ra"],["Profession","/prəˈfeʃn/","Danh từ","Nghề nghiệp"],["Rack","/ræk/","Danh từ","Giá đỡ, kệ"],["Financial","/faɪˈnænʃl/","Tính từ","Thuộc tài chính"],["Donation","/doʊˈneɪʃn/","Danh từ","Sự quyên góp"],["Lead","/liːd/","Động từ","Dẫn dắt, chỉ huy"],["Rare","/rer/","Tính từ","Hiếm"],["Replacement","/rɪˈpleɪsmənt/","Danh từ","Sự thay thế, vật thay thế"],["Prevent","/prɪˈvent/","Động từ","Ngăn chặn, ngăn ngừa"],["Subsidiary","/səbˈsɪdieri/","Danh từ","Công ty con"],["Courtesy","/ˈkɜːrtəsi/","Danh từ","Sự lịch sự, nhã nhặn"],["Analyst","/ˈænəlɪst/","Danh từ","Nhà phân tích"],["Achieve","/əˈtʃiːv/","Động từ","Đạt được"],["Forecast","/ˈfɔːrkæst/","Danh từ","Dự báo"],["Hang","/hæŋ/","Động từ","Treo, mắc"],["Draft","/dræft/","Danh từ","Bản thảo"],["Performer","/pərˈfɔːrmər/","Danh từ","Người biểu diễn"],["Timely","/ˈtaɪmli/","Tính từ","Kịp thời, đúng lúc"],["Punctuality","/ˌpʌŋktʃuˈæləti/","Danh từ","Sự đúng giờ"],["Recycling","/ˌriːˈsaɪklɪŋ/","Danh từ","Sự tái chế"],["Satisfy","/ˈsætɪsfaɪ/","Động từ","Làm hài lòng"],["In celebration of","/ɪn ˌselɪˈbreɪʃn əv/","Cụm từ","Để kỷ niệm, nhân dịp"],["Occupied","/ˈɑːkjupaɪd/","Tính từ","Đang sử dụng, có người"],["Short-staffed","/ˌʃɔːrt ˈstæft/","Tính từ","Thiếu nhân sự"],["Fairly","/ˈferli/","Trạng từ","Khá là, tương đối"],["Sales","/seɪlz/","Danh từ","Doanh số bán hàng"],["Promising","/ˈprɑːmɪsɪŋ/","Tính từ","Đầy hứa hẹn, triển vọng"],["Press","/pres/","Danh từ","Báo chí, truyền thông"],["Tow","/toʊ/","Động từ","Lai dắt, cẩu (xe)"],["Complete","/kəmˈpliːt/","Động từ","Hoàn thành"],["Eventually","/ɪˈventʃuəli/","Trạng từ","Cuối cùng, rốt cuộc"],["Qualified","/ˈkwɑːlɪfaɪd/","Tính từ","Đủ điều kiện, có năng lực"],["Convert","/kənˈvɜːrt/","Động từ","Chuyển đổi"],["Promote","/prəˈmoʊt/","Động từ","Thúc đẩy, thăng chức, quảng bá"],["Pavement","/ˈpeɪvmənt/","Danh từ","Vỉa hè, mặt đường"],["Thrilled","/θrɪld/","Tính từ","Hào hứng, vui sướng"],["Withhold","/wɪðˈhoʊld/","Động từ","Giữ lại, từ chối cho"],["Represent","/ˌreprɪˈzent/","Động từ","Đại diện"],["Arrange","/əˈreɪndʒ/","Động từ","Sắp xếp"],["Confidential","/ˌkɑːnfɪˈdenʃl/","Tính từ","Bảo mật, kín"],["Entrepreneur","/ˌɑːntrəprəˈnɜːr/","Danh từ","Doanh nhân"],["Specific","/spəˈsɪfɪk/","Tính từ","Cụ thể, đặc biệt"],["Affordable","/əˈfɔːrdəbl/","Tính từ","Giá cả phải chăng"],["Remove","/rɪˈmuːv/","Động từ","Loại bỏ, tháo ra"],["Reliable","/rɪˈlaɪəbl/","Tính từ","Đáng tin cậy"],["Purchase","/ˈpɜːrtʃəs/","Động từ","Mua hàng"],["Significance","/sɪɡˈnɪfɪkəns/","Danh từ","Tầm quan trọng, ý nghĩa"],["Owed","/oʊd/","Tính từ","Còn nợ"],["Fill","/fɪl/","Động từ","Lấp đầy, điền vào"],["Required","/rɪˈkwaɪərd/","Tính từ","Được yêu cầu, bắt buộc"],["Numerous","/ˈnuːmərəs/","Tính từ","Nhiều, đông đảo"],["Watery","/ˈwɔːtəri/","Tính từ","Lõng bõng nước, nhạt"],["Successive","/səkˈsesɪv/","Tính từ","Liên tiếp"],["Refurbish","/ˌriːˈfɜːrbɪʃ/","Động từ","Tân trang, trang trí lại"],["Particular","/pərˈtɪkjələr/","Tính từ","Cụ thể, đặc biệt"],["Compartment","/kəmˈpɑːrtmənt/","Danh từ","Ngăn chứa, khoang"],["Reciprocate","/rɪˈsɪprəkeɪt/","Động từ","Đền đáp, đáp lại"],["Semester","/sɪˈmestər/","Danh từ","Học kỳ"],["Stipulate","/ˈstɪpjuleɪt/","Động từ","Quy định"],["Nutrition","/nuˈtrɪʃn/","Danh từ","Dinh dưỡng"],["Cafeteria","/ˌkæfəˈtɪriə/","Danh từ","Quán ăn tự phục vụ"],["Pain","/peɪn/","Danh từ","Cơn đau"],["Priority","/praɪˈɔːrəti/","Danh từ","Sự ưu tiên"],["Light fixture","/laɪt ˈfɪkstʃər/","Danh từ","Đèn chùm, thiết bị chiếu sáng"],["Loyalty","/ˈlɔɪəlti/","Danh từ","Lòng trung thành"],["Afford","/əˈfɔːrd/","Động từ","Đủ khả năng chi trả"],["In person","/ɪn ˈpɜːrsn/","Cụm từ","Trực tiếp, đích thân"],["Speculate","/ˈspekjuleɪt/","Động từ","Suy đoán, đầu cơ"],["Unsightly","/ʌnˈsaɪtli/","Tính từ","Khó coi, xấu xí"],["Control","/kənˈtroʊl/","Động từ","Kiểm soát, điều khiển"],["Press conference","/ˈpres kɑːnfərəns/","Danh từ","Họp báo"],["Grain","/ɡreɪn/","Danh từ","Ngũ cốc"],["Handbook","/ˈhændbʊk/","Danh từ","Sổ tay hướng dẫn"],["Retreat","/rɪˈtriːt/","Danh từ","Chuyến đi nghỉ, dã ngoại"],["Shareholder","/ˈʃerhoʊldər/","Danh từ","Cổ đông"],["Bypass","/ˈbaɪpæs/","Động từ","Đi vòng, bỏ qua"],["Interact","/ˌɪntərˈækt/","Động từ","Tương tác"],["Bid","/bɪd/","Danh từ","Sự đấu thầu, giá thầu"],["Undergraduate","/ˌʌndərˈɡrædʒuət/","Danh từ","Sinh viên chưa tốt nghiệp"],["Reliably","/rɪˈlaɪəbli/","Trạng từ","Một cách đáng tin cậy"],["Match","/mætʃ/","Động từ","Phù hợp, nối, làm cho tương xứng"],["Lane","/leɪn/","Danh từ","Làn đường"],["Involve","/ɪnˈvɑːlv/","Động từ","Bao gồm, liên quan, để tâm trí vào"],["Fancy","/ˈfænsi/","Tính từ","Thích / Sang trọng, cầu kỳ"],["Notify","/ˈnoʊtɪfaɪ/","Động từ","Thông báo"],["Elaborate","/ɪˈlæbərət/","Tính từ","Tỉ mỉ, công phu, phức tạp"],["Inconvenience","/ˌɪnkənˈviːniəns/","Danh từ","Sự bất tiện"],["Rating","/ˈreɪtɪŋ/","Danh từ","Xếp hạng, đánh giá"],["Activate","/ˈæktɪveɪt/","Động từ","Kích hoạt"],["Potential","/pəˈtenʃl/","Tính từ","Tiềm năng"],["Celebrity","/səˈlebrəti/","Danh từ","Người nổi tiếng"],["Government","/ˈɡʌvərnmənt/","Danh từ","Chính phủ"],["Commence","/kəˈmens/","Động từ","Bắt đầu"],["Book","/bʊk/","Động từ","Đặt chỗ"],["Tardiness","/ˈtɑːrdinəs/","Danh từ","Sự chậm trễ, lề mề"],["Abundance","/əˈbʌndəns/","Danh từ","Sự phong phú, dồi dào"],["Expire","/ɪkˈspaɪər/","Động từ","Hết hạn"],["Pillow","/ˈpɪloʊ/","Danh từ","Cái gối"],["Stop by","/stɑːp baɪ/","Cụm động từ","Ghé qua"],["Reach for","/riːtʃ fɔːr/","Cụm động từ","Với lấy, hướng tay về phía"],["Satisfaction","/ˌsætɪsˈfækʃn/","Danh từ","Sự hài lòng"],["Source","/sɔːrs/","Danh từ","Nguồn, nguồn gốc"],["Own","/oʊn/","Động từ","Sở hữu"],["Shade","/ʃeɪd/","Động từ","Tạo bóng râm, che nắng"],["Thermostat","/ˈθɜːrməstæt/","Danh từ","Bộ điều chỉnh nhiệt độ"],["Sudden","/ˈsʌdn/","Tính từ","Đột ngột"],["Entirely","/ɪnˈtaɪərli/","Trạng từ","Hoàn toàn"],["Chemistry","/ˈkemɪstri/","Danh từ","Hóa học"],["Upcoming","/ˈʌpkʌmɪŋ/","Tính từ","Sắp tới"],["Relevant","/ˈreləvənt/","Tính từ","Có liên quan, thích hợp"],["Reduction","/rɪˈdʌkʃn/","Danh từ","Sự cắt giảm"],["Inexpensive","/ˌɪnɪkˈspensɪv/","Tính từ","Không đắt, rẻ"],["Competition","/ˌkɑːmpəˈtɪʃn/","Danh từ","Cuộc thi, sự cạnh tranh"]]; // [en, ipa, pos, vi]
+const PER = 5;
+const LEVELS = Math.ceil(VOCAB.length / PER);
+const KEY = 'noitu-toeic-v1';
+
+/* nhịp lặp lại ngắt quãng: số ngày cho từng bậc */
+const PACES = {
+  nhe:   {label:'Thong thả', days:[2,5,12,26,55,110]},
+  chuan: {label:'Chuẩn',     days:[1,3,7,16,35,70]},
+  day:   {label:'Dày',       days:[1,2,4,8,16,32]}
+};
+const NEW_CHOICES = [1,2,3,5,8];
+
+function levelWords(n){
+  return VOCAB.slice((n-1)*PER, n*PER).map(a => ({en:a[0], ipa:a[1], pos:a[2], vi:a[3]}));
+}
+
+/* ---------- ngày tháng ---------- */
+function today(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function addDays(iso, n){
+  const [y,m,d] = iso.split('-').map(Number);
+  const t = new Date(y, m-1, d + n);
+  return t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0');
+}
+function daysBetween(a, b){
+  const p = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d).getTime(); };
+  return Math.round((p(b) - p(a)) / 86400000);
+}
+function viDate(iso){ const [y,m,d] = iso.split('-'); return d + '/' + m; }
+
+/* ---------- lưu trữ ---------- */
+let store = {done:{}, cfg:{newPerDay:2, pace:'chuan', time:'20:00'}, daily:{date:'', newDone:0}};
+function load(){
+  try{
+    const r = localStorage.getItem(KEY);
+    if(r){ const p = JSON.parse(r); if(p && typeof p === 'object') store = Object.assign(store, p); }
+  }catch(e){}
+  if(!store.done) store.done = {};
+  if(!store.cfg) store.cfg = {newPerDay:2, pace:'chuan', time:'20:00'};
+  if(!PACES[store.cfg.pace]) store.cfg.pace = 'chuan';
+  if(!store.daily || store.daily.date !== today()) store.daily = {date:today(), newDone:0};
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+load();
+
+const intervals = () => PACES[store.cfg.pace].days;
+
+/* ---------- phát âm ---------- */
+let enVoice = null;
+function pickVoice(){
+  try{
+    const vs = speechSynthesis.getVoices() || [];
+    enVoice = vs.find(v => /^en[-_]US/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
+  }catch(e){}
+}
+if('speechSynthesis' in window){
+  pickVoice();
+  speechSynthesis.addEventListener('voiceschanged', pickVoice);
+}
+function speak(text){
+  if(!('speechSynthesis' in window)) return false;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = .85;
+    if(enVoice) u.voice = enVoice;
+    speechSynthesis.speak(u);
+    return true;
+  }catch(e){ return false; }
+}
+const gtLink = w => 'https://translate.google.com/?sl=en&tl=vi&op=translate&text=' + encodeURIComponent(w);
+
+function nextNewLevel(){
+  for(let i=1;i<=LEVELS;i++) if(!store.done[i]) return i;
+  return 0;
+}
+function dueLevels(){
+  const t = today();
+  return Object.keys(store.done).map(Number)
+    .filter(n => (store.done[n].due || t) <= t)
+    .sort((a,b) => (store.done[a].due||'').localeCompare(store.done[b].due||'') || a-b);
+}
+function newLeftToday(){
+  return Math.max(0, store.cfg.newPerDay - store.daily.newDone);
+}
+
+/* ---------- điều hướng ---------- */
+const $ = id => document.getElementById(id);
+const screens = {home:$('home'), play:$('play'), result:$('result'), lib:$('lib'), set:$('set')};
+function show(name){
+  for(const k in screens) screens[k].classList.toggle('hidden', k!==name);
+  window.scrollTo(0,0);
+}
+
+function renderHome(){
+  load();
+  const due = dueLevels(), left = newLeftToday(), nn = nextNewLevel();
+  const newToday = nn ? Math.min(left, LEVELS - Object.keys(store.done).length) : 0;
+  $('tDue').textContent = due.length;
+  $('tNew').textContent = newToday;
+  if(due.length + newToday > 0){
+    $('tNote').textContent = 'Khoảng ' + ((due.length + newToday) * PER) + ' từ, mất chừng ' + Math.max(2, Math.round((due.length+newToday)*1.5)) + ' phút.';
+    $('btnToday').textContent = 'Học hôm nay';
+    $('btnToday').disabled = false;
+    $('btnToday').style.opacity = 1;
+  } else {
+    $('tNote').textContent = store.daily.newDone > 0
+      ? 'Xong phần của hôm nay. Mai quay lại là vừa đúng nhịp ôn.'
+      : 'Chưa có gì tới hạn. Bạn có thể học thêm màn mới ở dưới.';
+    $('btnToday').textContent = 'Đã xong hôm nay';
+    $('btnToday').disabled = true;
+    $('btnToday').style.opacity = .45;
+  }
+  const d = Object.keys(store.done).length;
+  $('sDone').textContent = d;
+  $('sWords').textContent = Object.keys(store.done).reduce((s,n)=>s+levelWords(+n).length,0);
+  $('sTotal').textContent = LEVELS;
+  $('btnPlay').textContent = nn ? 'Chơi thêm màn ' + nn : 'Đã học hết 275 màn';
+  show('home');
+}
+
+/* ---------- phiên học trong ngày ---------- */
+let S = null;
+function startSession(){
+  const queue = dueLevels();
+  let left = newLeftToday(), n = nextNewLevel();
+  const used = new Set(queue);
+  while(left > 0 && n){
+    if(!used.has(n)){ queue.push(n); used.add(n); left--; }
+    n = 0;
+    for(let i=1;i<=LEVELS;i++) if(!store.done[i] && !used.has(i)){ n = i; break; }
+  }
+  if(!queue.length) return;
+  S = {queue, idx:0};
+  startLevel(queue[0]);
+}
+
+/* ---------- màn chơi ---------- */
+let G = null;
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+function startLevel(n){
+  const words = levelWords(n);
+  G = {n, words, matched:new Set(), sel:null, mistakes:0, t0:Date.now(), isNew:!store.done[n]};
+  $('pLv').textContent = 'Màn ' + n + (S ? ' · ' + (S.idx+1) + '/' + S.queue.length + ' hôm nay' : '');
+  buildCol($('colEn'), shuffle(words.map((w,i)=>i)), 'en');
+  buildCol($('colVi'), shuffle(words.map((w,i)=>i)), 'vi');
+  updateHud();
+  show('play');
+}
+
+function buildCol(el, order, side){
+  el.innerHTML = '';
+  order.forEach(i => {
+    const b = document.createElement('button');
+    b.className = 'card ' + side;
+    b.textContent = side==='en' ? G.words[i].en : G.words[i].vi;
+    b.dataset.i = i; b.dataset.side = side;
+    b.addEventListener('click', () => pick(b));
+    el.appendChild(b);
+  });
+}
+
+function updateHud(){
+  const m = G.matched.size, t = G.words.length;
+  $('pMeta').textContent = m + '/' + t + ' cặp' + (G.mistakes ? ' · ' + G.mistakes + ' lần sai' : '');
+  $('pBar').style.width = (m/t*100) + '%';
+}
+
+function pick(btn){
+  if(btn.classList.contains('done')){
+    if(btn.dataset.side === 'en') speak(G.words[+btn.dataset.i].en);
+    return;
+  }
+  const side = btn.dataset.side, i = +btn.dataset.i;
+  if(!G.sel || G.sel.side === side){
+    clearSel(); btn.classList.add('sel'); G.sel = {btn, side, i}; return;
+  }
+  const a = G.sel.btn, b = btn;
+  if(G.sel.i === i){
+    a.classList.remove('sel'); a.classList.add('done'); b.classList.add('done');
+    G.matched.add(i); G.sel = null; updateHud();
+    if(store.cfg.speak !== false) speak(G.words[i].en);
+    if(G.matched.size === G.words.length) setTimeout(finish, 420);
+  } else {
+    G.mistakes++; updateHud();
+    a.classList.remove('sel'); a.classList.add('bad'); b.classList.add('bad');
+    G.sel = null;
+    setTimeout(()=>{ a.classList.remove('bad'); b.classList.remove('bad'); }, 480);
+  }
+}
+function clearSel(){ document.querySelectorAll('.card.sel').forEach(c=>c.classList.remove('sel')); }
+
+function finish(){
+  const secs = Math.max(1, Math.round((Date.now()-G.t0)/1000));
+  const prev = store.done[G.n];
+  const days = intervals();
+  let box = prev ? (prev.box || 0) : 0;
+  if(G.mistakes === 0) box = Math.min(box + 1, days.length - 1);
+  else if(G.mistakes >= 3) box = 0;
+  const gap = days[box];
+  const due = addDays(today(), gap);
+
+  store.done[G.n] = {
+    mistakes: G.mistakes,
+    secs: prev ? Math.min(prev.secs, secs) : secs,
+    plays: (prev ? prev.plays : 0) + 1,
+    last: today(), box, due
+  };
+  if(G.isNew){ if(store.daily.date !== today()) store.daily = {date:today(), newDone:0}; store.daily.newDone++; }
+  save();
+
+  $('rTitle').textContent = 'Xong màn ' + G.n;
+  $('rScore').textContent = (G.mistakes === 0 ? 'Nối đúng hết · ' : G.mistakes + ' lần nối sai · ') + secs + ' giây · '
+    + 'ôn lại sau ' + gap + ' ngày, ngày ' + viDate(due);
+  $('rWords').innerHTML = G.words.map(()=>`
+    <div class="word">
+      <div><span class="en"></span><span class="ipa"></span><span class="tag"></span>
+        <button class="say">Nghe</button><a class="say gt" target="_blank" rel="noopener">Google Dịch</a></div>
+      <div class="vi"></div>
+    </div>`).join('');
+  [...$('rWords').children].forEach((el,k)=>{
+    const w = G.words[k];
+    el.querySelector('.en').textContent = w.en;
+    el.querySelector('.ipa').textContent = w.ipa;
+    el.querySelector('.tag').textContent = w.pos;
+    el.querySelector('.vi').textContent = w.vi;
+    el.querySelector('.say').addEventListener('click', ()=>speak(w.en));
+    el.querySelector('.gt').href = gtLink(w.en);
+  });
+
+  if(S && S.idx < S.queue.length - 1){
+    $('btnNext').textContent = 'Màn tiếp theo (' + (S.idx+2) + '/' + S.queue.length + ')';
+    $('btnNext').classList.remove('hidden');
+  } else if(S){
+    S = null;
+    $('btnNext').textContent = 'Xong phần hôm nay';
+  } else {
+    const nn = nextNewLevel();
+    $('btnNext').textContent = nn ? 'Chơi màn ' + nn : 'Về trang chính';
+  }
+  show('result');
+}
+
+function goNext(){
+  if(S && S.idx < S.queue.length - 1){ S.idx++; startLevel(S.queue[S.idx]); return; }
+  if(S){ S = null; renderHome(); return; }
+  const nn = nextNewLevel();
+  if(nn) startLevel(nn); else renderHome();
+}
+
+/* ---------- thư mục ---------- */
+function renderLib(){
+  load();
+  const t = today();
+  const ids = Object.keys(store.done).map(Number)
+    .sort((a,b)=>(store.done[a].due||'').localeCompare(store.done[b].due||'') || a-b);
+  const box = $('libList');
+  if(!ids.length){
+    box.innerHTML = '<div class="empty"><b>Chưa có màn nào ở đây</b>Chơi xong một màn là nó sẽ được lưu lại kèm ngày ôn.</div>';
+    show('lib'); return;
+  }
+  box.innerHTML = '';
+  ids.forEach(n => {
+    const d = store.done[n], ws = levelWords(n), due = d.due || t;
+    const gap = daysBetween(t, due);
+    const card = document.createElement('div');
+    card.className = 'lvcard';
+    card.innerHTML = `<div class="row"><span class="n">Màn ${n}</span><span class="sc"></span></div>
+      <div class="preview"></div>
+      <div style="margin-bottom:12px"><span class="due-badge"></span></div>
+      <button class="replay">Ôn lại màn này</button>`;
+    const badge = card.querySelector('.due-badge');
+    if(gap <= 0){ badge.textContent = 'Tới hạn ôn hôm nay'; badge.classList.add('now'); }
+    else badge.textContent = 'Ôn lại sau ' + gap + ' ngày · ' + viDate(due);
+    card.querySelector('.sc').textContent = 'đã chơi ' + d.plays + ' lần · bậc ' + ((d.box||0)+1) + '/' + intervals().length;
+    card.querySelector('.preview').textContent = ws.map(w=>w.en).join(' · ');
+    card.querySelector('.replay').addEventListener('click', ()=>{ S = null; startLevel(n); });
+    box.appendChild(card);
+  });
+  show('lib');
+}
+
+/* ---------- cài đặt ---------- */
+function renderSet(){
+  load();
+  const on = $('optNew'); on.innerHTML = '';
+  NEW_CHOICES.forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = v + ' màn';
+    b.setAttribute('aria-pressed', store.cfg.newPerDay === v);
+    b.addEventListener('click', ()=>{ store.cfg.newPerDay = v; save(); renderSet(); });
+    on.appendChild(b);
+  });
+  $('setWords').textContent = store.cfg.newPerDay * PER;
+
+  const op = $('optPace'); op.innerHTML = '';
+  Object.keys(PACES).forEach(k => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = PACES[k].label;
+    b.setAttribute('aria-pressed', store.cfg.pace === k);
+    b.addEventListener('click', ()=>{ store.cfg.pace = k; save(); renderSet(); });
+    op.appendChild(b);
+  });
+  $('setSpacing').textContent = 'Khoảng cách giữa các lần ôn: ' + intervals().join(', ') + ' ngày.';
+
+  const os = $('optSpeak'); os.innerHTML = '';
+  [['Đọc khi nối đúng', true], ['Tắt tiếng', false]].forEach(([label, val]) => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = label;
+    b.setAttribute('aria-pressed', (store.cfg.speak !== false) === val);
+    b.addEventListener('click', ()=>{ store.cfg.speak = val; save(); renderSet(); if(val) speak('ready'); });
+    os.appendChild(b);
+  });
+
+  $('optTime').value = store.cfg.time || '20:00';
+  const days = intervals(); let acc = 0;
+  $('planList').innerHTML = days.map((d,i)=>{ acc += d; return '<li>Lần ôn ' + (i+1) + ': sau ' + acc + ' ngày kể từ khi học</li>'; }).join('');
+  show('set');
+}
+$('optTime').addEventListener('change', e => {
+  store.cfg.time = e.target.value; save();
+  if('Notification' in window && Notification.permission === 'default'){
+    try{ Notification.requestPermission(); }catch(err){}
+  }
+});
+
+/* nhắc giờ học, chỉ chạy khi trang đang mở */
+let notified = '';
+setInterval(()=>{
+  const t = store.cfg.time; if(!t) return;
+  const d = new Date();
+  const now = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  const stamp = today() + t;
+  if(now === t && notified !== stamp){
+    notified = stamp;
+    const due = dueLevels().length + newLeftToday();
+    if(due <= 0) return;
+    const msg = 'Tới giờ học rồi: ' + due + ' màn đang chờ.';
+    if('Notification' in window && Notification.permission === 'granted'){
+      try{ new Notification('Nối từ TOEIC', {body: msg}); }catch(e){}
+    }
+    $('tNote').textContent = msg;
+  }
+}, 30000);
+
+/* ---------- nút ---------- */
+$('btnToday').addEventListener('click', startSession);
+$('btnPlay').addEventListener('click', ()=>{ const n = nextNewLevel(); if(n){ S = null; startLevel(n); } });
+$('btnHome').addEventListener('click', ()=>{ S = null; renderHome(); });
+$('btnSet').addEventListener('click', renderSet);
+$('btnLib').addEventListener('click', renderLib);
+$('btnLib2').addEventListener('click', renderLib);
+$('btnToLib').addEventListener('click', renderLib);
+$('btnNext').addEventListener('click', goNext);
+$('btnAgain').addEventListener('click', ()=>startLevel(G.n));
+$('btnReset').addEventListener('click', ()=>{
+  if(confirm('Xóa hết tiến độ, lịch ôn và thư mục màn đã chơi?')){
+    store = {done:{}, cfg:store.cfg, daily:{date:today(), newDone:0}}; save(); renderHome();
+  }
+});
+
+renderHome();
+</script>
+</body>
+</html>
